@@ -49,7 +49,7 @@ class formfields{
         $params['validation'] = 'text';
         $class = isset($params['class'])?$params['class']:'col-md-12';
 		$validator = "";
-		if ($params['required'] == true) {
+		if (isset($params['required']) && $params['required'] == true) {
 			$validator = "data-rule-text='true' data-msg-required='Please fill this field'";
 		}
         return "<textarea {$validator} class='form-control' name='submitform[{$params['id']}]' rows='{$params['lines']}' class='{$class}'".required($params)." > </textarea>";

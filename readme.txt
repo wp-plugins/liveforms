@@ -1,7 +1,7 @@
 === Live Forms - Drag and Drop Form Builder ===
 Contributors: codename065, shahriar0822
 Donate link: 
-Tags: file management plugin, downloads, document management plugin, download manager, file manager, download monitor, download counter, password protection, download tracker, download protection
+Tags: contact form builder, contact form, form builder, support form, wordpress form builder plugin, drag and drop form builder, Visual Form Builder, bootstrap form
 Requires at least: 3.5
 Tested up to: 3.9
 License: GPLv2 or later
@@ -33,6 +33,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 4. Form Entries
 
 == Changelog ==
+
+= 1.0.1 =
+* Fixed a notice
 
 = 1.0.0 =
 * Initial Release
