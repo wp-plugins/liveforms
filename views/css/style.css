@@ -1,0 +1,29 @@
+.w3eden .form-control{
+    box-shadow: none !important;
+    border-radius: 3px !important;
+}
+
+.w3eden #selectedfields .list-group-item a .glyphicon{
+    margin-left: 5px;
+    margin-top: 1px;
+}
+
+.w3eden .list-group-item .cog h5{
+    padding: 10px 15px 10px 30px;
+    border-radius: 3px;
+    background: #eeeeee;
+    margin: 10px 0;
+    font-weight: 700;
+}
+
+.w3eden .list-group-item .cog h5:before{
+    content: "\e019";
+    font-family: 'Glyphicons Halflings';
+    position: absolute;
+    margin-left: -18px;
+    color: #0074A2;
+}
+
+.w3eden .list-group-item .add .glyphicon{
+    top: 3px;
+}
