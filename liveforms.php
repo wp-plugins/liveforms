@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.0.1
+  Version: 1.0.2
   Author URI: http://liveform.org
  */
 
@@ -190,7 +190,7 @@ class liveforms {
 	function enqueue_scripts() {
 		wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
 		wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
-        wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/front.css");
+                wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/front.css");
 		wp_enqueue_style("lf_breadcrumbs_css", LF_BASE_URL . "views/css/bread-crumbs.css");
 		wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
 		wp_enqueue_script("jquery");

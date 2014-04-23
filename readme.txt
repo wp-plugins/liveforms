@@ -7,7 +7,6 @@ Tested up to: 3.9
 License: GPLv2 or later
  
   
- 
 WordPress Live Forms - Drag & Drop Form Builder, is an elegant way to build and manage any type of forms.
    
 
@@ -33,6 +32,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 4. Form Entries
 
 == Changelog ==
+
+= 1.0.2 =
+* Upgraded front-end css
 
 = 1.0.1 =
 * Fixed a notice

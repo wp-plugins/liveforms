@@ -27,3 +27,7 @@
 .w3eden .list-group-item .add .glyphicon{
     top: 3px;
 }
+
+.w3eden .form-group hr{
+    margin: 5px 0 10px 0;
+}

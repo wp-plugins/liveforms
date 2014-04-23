@@ -344,15 +344,19 @@ $fields = $commonfields;
 						<input type="text" class="form-control" name="contact[buttontext]" placeholder="Submit button text"
 							   id="buttontext" data-target="#submit_button"
 							   value="<?php echo (isset($form_data['buttontext']) ? $form_data['buttontext'] : "") ?>"/>
-						<label form="email">Email: </label>
-						<input type="text" class="form-control" name="contact[email]" placeholder="Email address" id="email"
-							   value="<?php echo (isset($form_data['email']) ? $form_data['email'] : "") ?>"/>
-						<label form="email">From: </label>
-						<input type="text" class="form-control" name="contact[from]" placeholder="Name to show in From field"
-							   id="from" value="<?php echo (isset($form_data['from']) ? $form_data['from'] : "") ?>"/>
+                                                
 						<label form="email">Thank you message: </label>
 						<textarea rows="2" class="form-control" name="contact[thankyou]" placeholder="Thank you message"
 								  id="thankyou"><?php echo (isset($form_data['thankyou']) ? $form_data['thankyou'] : "") ?></textarea>
+                                                <br/>
+                                                <b>Confirmation Email Settings</b>
+                                                <hr/>
+                                                <label form="email">From Email: </label>
+						<input type="text" class="form-control" name="contact[email]" placeholder="Email address" id="email"
+							   value="<?php echo (isset($form_data['email']) ? $form_data['email'] : "") ?>"/>
+						<label form="email">From Name: </label>
+						<input type="text" class="form-control" name="contact[from]" placeholder="Name to show in From field"
+							   id="from" value="<?php echo (isset($form_data['from']) ? $form_data['from'] : "") ?>"/>                  
 					</div>
 				</div>
 
