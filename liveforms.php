@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.0.2
+  Version: 1.0.3
   Author URI: http://liveform.org
  */
 
@@ -774,10 +774,7 @@ class liveforms {
 
 			//Preparing Email
 			//Fetching user infos for email
-			$form_agent_id = $form_data['agent'];
-			$form_agent_info = get_userdata($form_agent_id);
-
-			$form_agent_email = is_object($form_agent_info)?$form_agent_info->user_email:'';
+                                        
 			$from_email = $form_data['email'];
 			$from_name = $form_data['from'];
 
@@ -815,22 +812,7 @@ class liveforms {
 			$headers .= "Content-type: text/html";
 			wp_mail($admin_email_data['to'], $admin_email_data['subject'], $admin_email_data['message'], $headers);
 
-			//to form agent
-			if ($form_agent_id) {
-				$agent_email_data['subject'] = "[{$site_name}] Form submitted";
-				$agent_email_data['message'] = "A new submisstion has been made to {$site_name} through a form you have been assigned to. Please check back.\n";
-				foreach (maybe_unserialize($data) as $field_name => $entry_value) {
-					$agent_email_data['message'] .= "{$field_name}: {$entry_value}\n";
-				}
-				$agent_email_data['to'] = $form_agent_email;
-				$agent_email_data['from_email'] = $from_email;
-				$agent_email_data['from_name'] = $from_name;
-				$agent_email_data = apply_filters('agent_email_data', $agent_email_data, $form_id, maybe_unserialize($email_template_data));
-				$headers = "{$agent_email_data['from_name']} <{$agent_email_data['from_email']}>\r\n";
-				$headers .= "Content-type: text/html";
-				wp_mail($agent_email_data['to'], $agent_email_data['subject'], $agent_email_data['message'], $headers);
-			}
-
+                                        
 
 			// Increment the form submit count by 1
 			// $this->form_submit_count($form_id);

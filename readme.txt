@@ -33,6 +33,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 
 == Changelog ==
 
+= 1.0.3 =
+* Fixed a notice
+
 = 1.0.2 =
 * Upgraded front-end css
 
