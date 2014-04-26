@@ -758,9 +758,8 @@ class liveforms {
 			$form_entry = array('data' => $data, 'fid' => $form_id, 'status' => 'new', 'token' => $token, 'time' => time());
 
 			$form_entry = apply_filters("liveform_before_form_submit", $form_entry);
-
-			do_action("liveform_before_form_submit", $form_entry);
-
+                                        
+                       
 			global $wpdb;
 
 			// Insert the request into the database
@@ -818,27 +817,7 @@ class liveforms {
 			// $this->form_submit_count($form_id);
 
 			$data = maybe_unserialize($data);
-			if ($this->has_payment_fields($data)) {
-				$pay_details = $this->payment_fields($data);
-				$payment_field = $pay_details['field'];
-
-				$payment_data = array(
-					'method' => $pay_details['method'],
-					'amount' => $form_data['fieldsinfo'][$payment_field]['amount'],
-					'currency' => $form_data['fieldsinfo'][$payment_field]['currency'],
-					'extraparams' => $submission_id,
-					'methodparams' => $form_data['fieldsinfo'][$payment_field]['paymethods'][ucwords($pay_details['method'])]
-				);
-
-				$pay_object = new Liveforms_Payment($payment_data);
-				$jdata['paymentform'] = $pay_object->pay($payment_data);
-				$jdata['action'] = 'payment';
-				echo json_encode($jdata);
-
-				// Hook the payment notifier
-
-				die();
-			}
+                                        
 
             $return_data = array();
             $return_data['message'] = apply_filters("liveform_submitform_thankyou_message",stripslashes($form_data['thankyou']));
