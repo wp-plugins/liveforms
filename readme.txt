@@ -26,7 +26,7 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 
 ( To unlock some advanced feature and all [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) you will need [Pro Version](http://liveform.org/pricing/) )
  
-== Installation =
+== Installation ==
 
 1. Upload `liveforms` to the `/wp-content/plugins/`  directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
