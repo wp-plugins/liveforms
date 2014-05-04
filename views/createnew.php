@@ -21,7 +21,7 @@ $fields = $commonfields;
 <div class="w3eden"><br/>
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-4">
+                    <div class="col-md-4" id="allformfields">
                 <input type="text" style="font-weight: 700" class="form-control text-center shortcode-code" readonly="readonly" value="<?php echo "[liveform form_id={$form_post_id}]" ?>"/><br/>
 
                 <div class="panel-group" id="accordion">
@@ -33,7 +33,7 @@ $fields = $commonfields;
 								Used Fields</a></div>
 						<div id="commonfields" class="panel-collapse collapse in">
 							<div class="panel-body">
-								<ul id="availablefields" class="list-group">
+								<ul id="availablefields" class="availablefields dble list-group">
 									<!-- Populating Common Fields list -->
 									<?php foreach ($fields as $key => $data): ?>
 										<li class="list-group-item" for="<?php echo $key; ?>">
@@ -53,7 +53,7 @@ $fields = $commonfields;
 								Fields</a></div>
 						<div id="genericfields" class="panel-collapse collapse">
 							<div class="panel-body">
-								<ul id="availablefields" class="list-group">
+								<ul id="availablefields" class="availablefields dble list-group">
 									<!-- Populating Generic Fields list -->
 									<?php foreach ($generic_fields as $key => $data): ?>
 										<li class="list-group-item" for="<?php echo $key; ?>">
@@ -74,7 +74,7 @@ $fields = $commonfields;
 								Fields</a></div>
 						<div id="advancedfields" class="panel-collapse collapse">
 							<div class="panel-body">
-                                <ul class="list-group" id="availablefields">
+                                <ul class="availablefields list-group" id="availablefields">
                                     <!-- Populating Advanced Fields list -->
                                     <li for="file" class="list-group-item">
                                         <span class="lfi lfi-file"></span> File Upload											<a href="#" title="Available in pro only!"><i class="glyphicon glyphicon-info-sign pull-right ttipf text-warning" title="Available in pro only!"></i></a>
@@ -666,6 +666,7 @@ $fields = $commonfields;
 <!-- Teamplates end -->
 <!-- Engine functions start -->
 <script type="text/javascript">
+var ds = 0;
 function add_field(obj, position) {
     //Add field with form
     if (jQuery(obj).attr('data-options') != undefined)
@@ -678,10 +679,11 @@ function add_field(obj, position) {
         var tmp = jQuery("#template").html();
 
     var ID = obj.attr('rel') + "_" + new Date().getTime();
-    position.html(Mustache.render(tmp, {title: obj.attr('title'), value: obj.attr('rel'), ID: ID}));
-    position.unwrap();
-    //jQuery('#selectedfields li.ui-draggable').after(Mustache.render(tmp, {title: obj.attr('title'), value: obj.attr('rel'), ID: ID}));
-    //position.remove();
+    //position.html(Mustache.render(tmp, {title: obj.attr('title'), value: obj.attr('rel'), ID: ID}));
+    //position.children('li').unwrap();
+    if(ds==1)
+    jQuery('#selectedfields li.ui-sortable-placeholder').after(Mustache.render(tmp, {title: obj.attr('title'), value: obj.attr('rel'), ID: ID}));
+    position.remove();
 
     jQuery('.form-field-label').on('keyup', function () {
         jQuery(jQuery(this).attr('data-target')).html(jQuery(this).val());
@@ -748,22 +750,30 @@ function add_field(obj, position) {
 
 jQuery(function ($) {
 
-//    $('#availablefields li').draggable({
-//        connectToSortable: "#selectedfields",
-//        helper: "clone",
-//        revert: "invalid"
-//    });
+$('.dble li').draggable({
+        start: function(){ ds = 1; },
+        connectToSortable: "#selectedfields",
+        helper: "clone",
+        revert: "invalid"
+    });
 
     
-//    $("#selectedfields").droppable({
-//        activeClass: "ui-state-highlight",
-//        drop: function (event, ui) {
-//            var position = ui.draggable;
-//            var obj = position.find("a.add");
-//            add_field(obj, position);
-//            //return false;
-//        }
-//    });
+    $("#selectedfields").droppable({
+        activeClass: "ui-state-highlight",
+        drop: function (event, ui) {
+            var position = ui.draggable;
+            console.log(position);
+            var obj = position.find("a.add");
+            if(ds==1)
+            add_field(obj, position);
+           // $( this ).find( ".placeholder" ).remove();
+           // $( "<li></li>" ).text( 'ok' ).appendTo( this );
+           // alert(1);
+          //  $('#selectedfields .list-group-item.ui-draggable').append()
+            ds = 0;
+            return false;
+        }
+    });
 	$("#selectedfields").sortable();
     $('#availablefields .add').click(function () {
         //Add field with form

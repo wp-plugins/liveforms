@@ -1,13 +1,13 @@
 === Live Forms - Visual Form Builder ===
 Contributors: codename065, shahriar0822
 Donate link: http://liveform.org/ 
-Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form
+Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form, contact forms
 Requires at least: 3.5
 Tested up to: 3.9
 License: GPLv2 or later
  
   
-WordPress Live Forms - Drag & Drop Form Builder, is an elegant way to build and manage any type of forms.
+WordPress Live Forms - Visual Form Builder, is an elegant way to build and manage any type of forms.
    
 
 == Description ==
@@ -21,6 +21,7 @@ WordPress Live Forms is an elegant way to build and manage any type of forms sim
 * 4 Commonly Used Fields
 * 6 Generic Form Fields
 * Lots of Actions and Filters Hooks to increase its extendibility  
+* Front-end UI Powered by Bootstrap 3
 
 For More Details Please check [LiveForm.org](http://liveform.org/)
 
@@ -41,9 +42,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 
 == Changelog ==
 
-= 1.0.4 =
-* Added filter hook "liveform_before_form_submit" 
-* Added action hook "liveform_after_form_submitted" 
+= 1.1.0 =
+* Upgraded drag and drop options
+* Upgraded UI 
 
 = 1.0.3 =
 * Fixed a notice
