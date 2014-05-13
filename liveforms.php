@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.1.0
+  Version: 1.1.1
   Author URI: http://liveform.org
  */
 
