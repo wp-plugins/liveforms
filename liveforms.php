@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.1.1
+  Version: 1.1.2
   Author URI: http://liveform.org
  */
 
@@ -238,8 +238,8 @@ class liveforms {
 	 *        -- Agent selection panel
 	 */
 	public function add_meta_box($post_type) {
-		$post_types = array('form'); //limit meta box to certain post types
-		//if (in_array($post_type, $post_types)) {
+		
+                //if (in_array($post_type, $post_types)) {
 		// Add the 'Form' creation panel
 		add_meta_box(
 				'createnew'
@@ -296,7 +296,7 @@ class liveforms {
 			'hierarchical' => false,
 			'menu_position' => null,
 			'supports' => array('title'),
-            'menu_icon' => LF_BASE_URL . '/images/form.png'
+            'menu_icon' => 'dashicons-feedback'
 		);
 
 		register_post_type('form', $form_post_type_args);

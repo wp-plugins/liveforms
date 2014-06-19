@@ -42,6 +42,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 
 == Changelog ==
 
+= 1.1.2 =
+* Some minor upgrade on various options
+
 = 1.1.1 =
 * Adjusted html issue in front-end form view
 
