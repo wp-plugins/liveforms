@@ -127,7 +127,8 @@
 						$('#submit').html("<i id='spinner' class='fa fa-spinner fa-spin'></i> Please wait");
 					}, // pre-submit callback
 					success: function(response) {
-						console.log(response);
+						//console.log(response);
+                         alert(response);
 						msgs = new Array();
 						$('#spinner').remove();
 						$('#submit').html(submit_btn_text);

@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.1.2
+  Version: 1.1.3
   Author URI: http://liveform.org
  */
 
@@ -771,6 +771,8 @@ class liveforms {
 
 			do_action("liveform_after_form_submitted", $form_entry, $submission_id);
 
+            $field_names_for_email = $this->get_field_names($data, $form_data);
+
 			//Preparing Email
 			//Fetching user infos for email
                                         
@@ -783,7 +785,7 @@ class liveforms {
 			//to user
 			$site_name = get_bloginfo('name');
 			$user_email_data['subject'] = "[{$site_name}] Thanks for contacting with us";
-			$user_email_data['message'] = "Thanks for your visit to {$site_name}. We are glad that you contacted with us. To gain further access to your submitted request, use this token: [ {$token} ]";
+			$user_email_data['message'] = "Thank You, Your request will be processed within 24 hours. ";
 			$user_email_data['to'] = $emails;
 			$user_email_data['from_email'] = $from_email;
 			$user_email_data['from_name'] = $from_name;
@@ -799,9 +801,9 @@ class liveforms {
 
 			//to form admin
 			$admin_email_data['subject'] = "[{$site_name}] Form submitted";
-			$admin_email_data['message'] = "New form submission on you site {$site_name}.\n";
+			$admin_email_data['message'] = "New form submission on your site {$site_name}.<br/>\n";
 			foreach (maybe_unserialize($data) as $field_name => $entry_value) {
-				$admin_email_data['message'] .= "{$field_name}: {$entry_value}\n";
+				$admin_email_data['message'] .= "{$field_names_for_email[$field_name]}: {$entry_value}<br/>\n";
 			}
 			$admin_email_data['to'] = $from_email;
 			$admin_email_data['from_email'] = $from_email;
@@ -825,9 +827,26 @@ class liveforms {
             echo json_encode($return_data);
 			die();
 		}
+
+
 	}
 
+    /**
+     * @function get_field_names
+     * @uses Extract field names from serialized form data and prepare an array with ID => Label
+     * @return type array
+     */
+    function get_field_names($ef_data, $ef_form_data) {
+        $ef_data = maybe_unserialize($ef_data);
+        $ef_form_data = maybe_unserialize($ef_form_data);
+        $ef_prep_fields = array();
 
+        foreach($ef_data as $ef_name => $ef_value) {
+            $ef_prep_fields[$ef_name] = $ef_form_data['fieldsinfo'][$ef_name]['label'];
+        }
+
+        return $ef_prep_fields;
+    }
 
 	/** Library to get template * */
 	function get_html($view, $html_data) {
