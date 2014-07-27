@@ -42,6 +42,9 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 
 == Changelog ==
 
+= 1.1.4 =
+* Fixed an issue in form entries
+
 = 1.1.3 =
 * Fixed issue with email message
 

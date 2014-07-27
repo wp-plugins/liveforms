@@ -16,10 +16,10 @@ $purl .= "post_type={$_REQUEST['post_type']}&page={$_REQUEST['page']}&form_id={$
 		</div>
 		<div class="col-md-7 text-right">
 			<div class="row btns">
-				<div class="col-md-3"><button class="btn btn-primary btn-block showreqs" data-status="new"><h3 id="new" style="margin: 10px 0"><?php echo $counts['new'] ?></h3>New Entries</button></div>
-				<div class="col-md-3"><button class="btn btn-success btn-block showreqs" data-status="inprogress"><h3 id="inprogress" style="margin: 10px 0"><?php echo $counts['inprogress'] ?></h3>In Progress</button></div>
-				<div class="col-md-3"><button class="btn btn-warning btn-block showreqs" data-status="onhold"><h3 id="onhold" style="margin: 10px 0"><?php echo $counts['onhold'] ?></h3>On Hold</button></div>
-				<div class="col-md-3"><button class="btn btn-default btn-block showreqs" data-status="resolved"><h3 id="resolved" style="margin: 10px 0"><?php echo $counts['resolved'] ?></h3>Resolved</button></div>
+				<div class="col-md-3"><button class="btn btn-primary btn-block showreqs" disabled="disabled" data-status="new"><h3 id="new" style="margin: 10px 0"><?php echo $counts['new'] ?></h3>New Entries</button></div>
+				<div class="col-md-3"><button class="btn btn-success btn-block showreqs" disabled="disabled" data-status="inprogress"><h3 id="inprogress" style="margin: 10px 0"><?php echo $counts['inprogress'] ?></h3>In Progress</button></div>
+				<div class="col-md-3"><button class="btn btn-warning btn-block showreqs" disabled="disabled" data-status="onhold"><h3 id="onhold" style="margin: 10px 0"><?php echo $counts['onhold'] ?></h3>On Hold</button></div>
+				<div class="col-md-3"><button class="btn btn-default btn-block showreqs" disabled="disabled" data-status="resolved"><h3 id="resolved" style="margin: 10px 0"><?php echo $counts['resolved'] ?></h3>Resolved</button></div>
 			</div>
 		</div>
 	</div><br/>
