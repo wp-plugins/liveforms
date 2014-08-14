@@ -410,6 +410,7 @@ class liveforms {
 	 */
 	function ajax_submit_change_request_state() {
 		if ($this->is_ajax() && isset($_REQUEST['action']) && $_REQUEST['action'] == 'change_req_state') {
+                        $ids = '';                
 			if (isset($_REQUEST['ids'])) {
 				$ids = implode(",", $_REQUEST['ids']);
 			}
@@ -428,6 +429,7 @@ class liveforms {
 					default:
 						$query = "update {$wpdb->prefix}liveforms_conreqs set `status`='{$status}' where `id` in ({$ids})";
 				}
+                                if($ids!='')
 				$wpdb->query($query);
 
 				// Get counts

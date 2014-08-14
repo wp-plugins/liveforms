@@ -41,6 +41,8 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 4. Form Entries
 
 == Changelog ==
+= 1.1.5 =
+* Fixed minor issue with form entry delete
 
 = 1.1.4 =
 * Fixed an issue in form entries
