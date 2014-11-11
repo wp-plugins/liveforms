@@ -4,7 +4,7 @@
   Plugin URI: http://liveform.org
   Description: Live Form - Drag and Drop Form Builder For WordPress.
   Author: Shaon
-  Version: 1.1.4
+  Version: 1.1.5
   Author URI: http://liveform.org
  */
 
@@ -793,7 +793,12 @@ class liveforms {
 			$user_email_data['from_name'] = $from_name;
 
 			$user_email_data = apply_filters('user_email_data', $user_email_data, $form_id, maybe_unserialize($email_template_data));
-			$headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
+                         if(!empty($from_email)) {
+                            $headers = "From: \"{$user_email_data['from_name']}\" <{$user_email_data['from_email']}>\r\n";
+                        } else {
+                            $headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
+                        }
+			//$headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
 			$headers .= "Content-type: text/html";
 			if (isset($user_email_data['subject']) || isset($user_email_data['message'])) {
 				foreach ($user_email_data['to'] as $email) {
