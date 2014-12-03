@@ -39,8 +39,7 @@ Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more featur
 1. Upload `liveforms` to the `/wp-content/plugins/`  directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
-
-
+ 
 == Screenshots ==
 1. From Builder
 2. Form Preview
