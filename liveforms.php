@@ -1,10 +1,15 @@
 <?php
+
+/**
+ * @package Live Forms
+ * @version 1.0
+ */
 /*
-  Plugin Name: Live Form
+  Plugin Name: Live Forms
   Plugin URI: http://liveform.org
-  Description: Live Form - Drag and Drop Form Builder For WordPress.
-  Author: Shaon
-  Version: 1.1.5
+  Description: Drag and Drop Form Builder Form WordPress
+  Author: WP Eden
+  Version: 1.2.0
   Author URI: http://liveform.org
  */
 
@@ -16,10 +21,12 @@ define('LF_ACTIVATED', true);
 
 // Include libraries
 include LF_BASE_DIR . '/libs/advanced-fields.class.php';
+include LF_BASE_DIR . '/libs/payment.class.php';
+include LF_BASE_DIR . '/libs/payment_methods/Paypal/class.Paypal.php';
 include LF_BASE_DIR . '/libs/field_defs.php';
 include LF_BASE_DIR . '/libs/form-fields.class.php';
 include LF_BASE_DIR . '/libs/functions.php';
-include LF_BASE_DIR . '/libs/liveforms-reqlist-paginator.class.php';
+include LF_BASE_DIR . '/libs/phpcaptcha/captcha.php';
 
 class liveforms {
 
@@ -54,7 +61,10 @@ class liveforms {
 		add_action('init', array($this, 'ajax_submit_reply'));
 		add_action('init', array($this, 'ajax_action_submit_form'));
 		add_action('init', array($this, 'ajax_submit_change_request_state'));
+		add_action('init', array($this, 'ajax_action_upadate_agent'));
 		add_action('init', array($this, 'show_captcha_image'));
+		add_action('init', array($this, 'add_payment_verification_hook'));
+		add_action('init', array($this, 'autoload_field_classes'));
 
 		// Custom UI elements 
 		add_action('admin_menu', array($this, 'register_custom_menu_items'));
@@ -72,7 +82,15 @@ class liveforms {
 
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+
+
 		$this->setup_fields();
+
+ 
+		if(is_admin()){
+			require_once LF_BASE_DIR . 'settings.php';
+			LiveFormsSettings::getInstance();
+		}
 	}
 
 	/*
@@ -98,24 +116,23 @@ class liveforms {
 			`time` int(11) NOT NULL,
 			`agent_id` int(11) NOT NULL,
 			`replied_by` varchar(500) NOT NULL,
-			PRIMARY KEY (`id`)
-        )";
+			PRIMARY KEY (`id`))";
 
 		$sqls[] = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}liveforms_stats` (
 			`id` int(11) NOT NULL AUTO_INCREMENT,
 			`fid` int(11) NOT NULL,
+			`author_id` int(11) NOT NULL,
 			`action` varchar(20) NOT NULL,
 			`ip` varchar(30) NOT NULL,
 			`time` int(11) NOT NULL,
 			PRIMARY KEY (`id`)
         )";
 
-
 		// Add necessary roles
 		// Agent role that helps "agent" users to manage
-		// the forms that have been assigned to them
-		$agent_caps = array('subscriber');
-		add_role('agent', 'Agent', $agent_caps);
+		// the forms that have been assigned to them                                        
+		$agent_caps = get_role('subscriber');
+		add_role('agent', 'Agent', $agent_caps->capabilities);
 
 		// Execute the SQLs
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -191,19 +208,40 @@ class liveforms {
 		wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
 		wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
                 wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/front.css");
-		wp_enqueue_style("lf_breadcrumbs_css", LF_BASE_URL . "views/css/bread-crumbs.css");
-		wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+		//wp_enqueue_style("lf_breadcrumbs_css", LF_BASE_URL . "views/css/bread-crumbs.css");
+		wp_enqueue_style('lf_select2_css', LF_BASE_URL. "views/css/select2.css");
+		wp_enqueue_style('lf_bootstrap_breadcrumbs_css', LF_BASE_URL. "views/css/bootstrap-breadcrumbs.css");
+
+		//jQuery UI date time picker
+		wp_enqueue_style('lf_jquery_ui', LF_BASE_URL . "views/css/jquery-ui.css");
+		wp_enqueue_style('lf_jquery_ui_timepicker_addon_css', LF_BASE_URL.'views/css/jquery-ui-timepicker-addon.css');
+
+
+		// RateIt!
+		wp_enqueue_style('lf_rateit_css', LF_BASE_URL. "views/css/rateit.css");
+
 		wp_enqueue_script("jquery");
 		wp_enqueue_script('jquery-form');
 		wp_register_script('jquery-validation-plugin', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js', array('jquery'));
 		wp_enqueue_script('jquery-validation-plugin');
 		wp_enqueue_script("lf_bootstrap_js", LF_BASE_URL . "views/js/bootstrap.min.js");
 		wp_enqueue_script("lf_mustache_js", LF_BASE_URL . "views/js/mustache.js");
+		wp_enqueue_script("lf_sha256_js", LF_BASE_URL . "views/js/sha256.js");
 		wp_enqueue_script("jquery-ui-core");
 		wp_enqueue_script("jquery-ui-sortable");
+
+
+		//jQuery UI datetime picker
 		wp_enqueue_script("jquery-ui-datepicker");
+		wp_enqueue_script("jquery-ui-slider");
+		wp_enqueue_script('lf_jquery_ui_timepicker_addon_js', LF_BASE_URL . 'views/js/jquery-ui-timepicker-addon.js', array('jquery', 'jquery-ui-core','jquery-ui-datepicker', 'jquery-ui-slider'));
+
 		wp_enqueue_script("jquery-ui-draggable");
 		wp_enqueue_script("jquery-ui-droppable");
+		wp_enqueue_script("jquery-select2-jquery-js", LF_BASE_URL . "views/js/select2.js");
+
+		// RateIt!
+		wp_enqueue_script("lf_jquery_rateit_js", LF_BASE_URL . "views/js/jquery.rateit.min.js");
 	}
 
 	/**
@@ -211,12 +249,19 @@ class liveforms {
 	 * @uses Add the JS and CSS dependencies for loading on the admin accessible sections
 	 */
 	function admin_enqueue_scripts() {
-        $post_type = isset($_GET['post_type'])?$_GET['post_type']:get_post_type();
-        if($post_type!='form') return;
 		wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
-		wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/style.css");
+		wp_enqueue_style("lf_bootstrap_theme_css", LF_BASE_URL . "views/css/bootstrap-theme.min.css");
 		wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
-		wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/jquery-ui.css');
+                wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/style.css");
+		wp_enqueue_style('lf_select2_css', LF_BASE_URL. "views/css/select2.css");
+
+		//jQuery UI datetime picker
+		wp_enqueue_style('lf_jquery_ui', LF_BASE_URL . "views/css/jquery-ui.css");
+		wp_enqueue_style('lf_jquery_ui_timepicker_addon_css', LF_BASE_URL.'views/css/jquery-ui-timepicker-addon.css');
+
+		// RateIt!
+		wp_enqueue_style('lf_rateit_css', LF_BASE_URL. "views/css/rateit.css");
+
 		wp_enqueue_script("jquery");
 		wp_enqueue_script('jquery-form');
 		wp_register_script('jquery-validation-plugin', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js', array('jquery'));
@@ -225,9 +270,18 @@ class liveforms {
 		wp_enqueue_script("lf_mustache_js", LF_BASE_URL . "views/js/mustache.js");
 		wp_enqueue_script("jquery-ui-core");
 		wp_enqueue_script("jquery-ui-sortable");
+
+		//jQuery UI datetime picker
 		wp_enqueue_script("jquery-ui-datepicker");
+		wp_enqueue_script("jquery-ui-slider");
+		wp_enqueue_script('lf_jquery_ui_timepicker_addon_js', LF_BASE_URL.'views/js/jquery-ui-timepicker-addon.js', array('jquery', 'jquery-ui-core','jquery-ui-datepicker', 'jquery-ui-slider'));
+
 		wp_enqueue_script("jquery-ui-draggable");
 		wp_enqueue_script("jquery-ui-droppable");
+		wp_enqueue_script("jquery-select2-jquery-js", LF_BASE_URL . "views/js/select2.js");
+
+		// RateIt!
+		wp_enqueue_script("lf_jquery_rateit_js", LF_BASE_URL . "views/js/jquery.rateit.min.js");
 	}
 
 	/**
@@ -238,8 +292,8 @@ class liveforms {
 	 *        -- Agent selection panel
 	 */
 	public function add_meta_box($post_type) {
-		
-                //if (in_array($post_type, $post_types)) {
+		$post_types = array('form'); //limit meta box to certain post types
+		//if (in_array($post_type, $post_types)) {
 		// Add the 'Form' creation panel
 		add_meta_box(
 				'createnew'
@@ -279,8 +333,7 @@ class liveforms {
 			'search_items' => __('Search Forms', 'liveforms'),
 			'parent_item_colon' => __('Parent Forms:', 'liveforms'),
 			'not_found' => __('No forms found.', 'liveforms'),
-			'not_found_in_trash' => __('No forms found in Trash.', 'liveforms')
-
+			'not_found_in_trash' => __('No forms found in Trash.', 'liveforms'),
 		);
 
 		$form_post_type_args = array(
@@ -296,7 +349,7 @@ class liveforms {
 			'hierarchical' => false,
 			'menu_position' => null,
 			'supports' => array('title'),
-            'menu_icon' => 'dashicons-feedback'
+                        'menu_icon' => 'dashicons-feedback'
 		);
 
 		register_post_type('form', $form_post_type_args);
@@ -307,40 +360,43 @@ class liveforms {
 	 * @uses Save the form after creation through the 'Form' creation panel
 	 */
 	function action_save_form($post_id) {
-		$formadata = isset($_REQUEST['contact'])?$_REQUEST['contact']:null;
-		if (count($formadata) > 0 && get_post_type() == 'form') {
-			$prev_data = get_post_meta($post_id, 'form_data', $single = true);
-			$prev_agent_id = $prev_data['agent'];
-			if ((empty($formadata['agent']) && !empty($prev_agent_id)) || (!empty($formadata['agent']) && $formadata['agent'] != $prev_agent_id)) {
-				$prev_agent_forms = get_user_meta($user_id = $prev_agent_id, $meta_key = 'form_ids', $single = true);
-				if (!empty($prev_agent_forms)) {
-					$prev_agent_forms = $prev_agent_forms;
-					foreach ($prev_agent_forms as $key => $value) {
-						if ($value == $post_id) {
-							unset($prev_agent_forms[$key]);
+		if (isset($_REQUEST['contact'])) {
+			$formadata = $_REQUEST['contact'];
+			if (count($formadata) > 0 && get_post_type() == 'form') {
+				$prev_data = get_post_meta($post_id, 'form_data', $single = true);
+				$prev_agent_id = isset($prev_data['agent']) ? $prev_data['agent'] : '';
+				if ((empty($formadata['agent']) && !empty($prev_agent_id)) || (!empty($formadata['agent']) && $formadata['agent'] != $prev_agent_id)) {
+					$prev_agent_forms = get_user_meta($user_id = $prev_agent_id, $meta_key = 'form_ids', $single = true);
+					if (!empty($prev_agent_forms)) {
+						$prev_agent_forms = $prev_agent_forms;
+						foreach ($prev_agent_forms as $key => $value) {
+							if ($value == $post_id) {
+								unset($prev_agent_forms[$key]);
+							}
 						}
 					}
+					update_user_meta($user_id = $prev_agent_id, $meta_key = 'form_ids', $meta_value = $prev_agent_forms);
 				}
-				update_user_meta($user_id = $prev_agent_id, $meta_key = 'form_ids', $meta_value = $prev_agent_forms);
-			}
 
-			update_post_meta($post_id, 'form_data', $formadata);
-			// Add form to agent's formlist
-			if (!empty($formadata['agent'])) {
-				$agent_id = $formadata['agent'];
-				$prev_forms = get_user_meta($user_id = $agent_id, $meta_key = 'form_ids', $single = true);
-				if (empty($prev_forms)) {
-					$prev_forms = array($post_id);
-				} else {
-					$prev_forms = $prev_forms;
-					foreach ($prev_forms as $key => $value) {
-						if ($value == $post_id) {
-							unset($prev_forms[$key]);
+				update_post_meta($post_id, 'form_data', $formadata);
+				update_post_meta($post_id, 'frontend_owner_id', get_current_user_id());
+				// Add form to agent's formlist
+				if (!empty($formadata['agent'])) {
+					$agent_id = $formadata['agent'];
+					$prev_forms = get_user_meta($user_id = $agent_id, $meta_key = 'form_ids', $single = true);
+					if (empty($prev_forms)) {
+						$prev_forms = array($post_id);
+					} else {
+						$prev_forms = $prev_forms;
+						foreach ($prev_forms as $key => $value) {
+							if ($value == $post_id) {
+								unset($prev_forms[$key]);
+							}
 						}
+						$prev_forms[] = $post_id;
 					}
-					$prev_forms[] = $post_id;
+					update_user_meta($user_id = $agent_id, $meta_key = 'form_ids', $meta_value = $prev_forms);
 				}
-				update_user_meta($user_id = $agent_id, $meta_key = 'form_ids', $meta_value = $prev_forms);
 			}
 		}
 	}
@@ -354,6 +410,7 @@ class liveforms {
 	 */
 	function ajax_get_request_list() {
 		if ($this->is_ajax() && isset($_REQUEST['section']) && $_REQUEST['section'] == 'stat_req') {
+			$_REQUEST['paged'] = 1;
 			$ajax_html = $this->action_get_reqlist($args = array(
 				'form_id' => $_REQUEST['form_id'],
 				'status' => $_REQUEST['status'],
@@ -375,6 +432,17 @@ class liveforms {
 			$reply_id = $this->handle_replies();
 			global $wpdb;
 			$reply = $wpdb->get_row("select * from {$wpdb->prefix}liveforms_conreqs where `id`='{$reply_id}'", ARRAY_A);
+			$replier_id = $reply['uid'];
+			if ($replier_id != -1) {
+				$replier_data = get_userdata($replier_id);
+				if (!$replier_data) {
+					$replier_id = $reply['agent_id'];
+					$replier_data = get_userdata($replier_id);
+				}
+				$reply['icon'] = md5(strtolower(trim($replier_data->user_email)));
+			} else {
+				$reply['icon'] = md5(rand());
+			}
 
 			if ($reply_id) {
 				$image_code = base64_encode($reply['icon']);
@@ -410,7 +478,6 @@ class liveforms {
 	 */
 	function ajax_submit_change_request_state() {
 		if ($this->is_ajax() && isset($_REQUEST['action']) && $_REQUEST['action'] == 'change_req_state') {
-                        $ids = '';                
 			if (isset($_REQUEST['ids'])) {
 				$ids = implode(",", $_REQUEST['ids']);
 			}
@@ -428,12 +495,14 @@ class liveforms {
 						break;
 					default:
 						$query = "update {$wpdb->prefix}liveforms_conreqs set `status`='{$status}' where `id` in ({$ids})";
+//						$get_count_query = "select * from {$wpdb->prefix}liveforms_conreqs where `status`='{$query_status}'";
+//						$new_stat_count = $wpdb->query($get_count_query, ARRAY_A);
 				}
-                                if($ids!='')
+				$query = apply_filters('liveform_form-entries_action_query',$query,$status,$ids);
 				$wpdb->query($query);
 
 				// Get counts
-				$get_count_query = "select * from {$wpdb->prefix}liveforms_conreqs where `status`='{$query_status}'";
+				$get_count_query = "select * from {$wpdb->prefix}liveforms_conreqs where `status`='{$query_status}' and `fid`='{$_REQUEST['form_id']}'";
 				$request_count = $wpdb->query($get_count_query, ARRAY_A);
 			}
 
@@ -461,7 +530,29 @@ class liveforms {
 	 * @return type string(html)
 	 */
 	function view_public_token() {
-		$html = '<a href="http://liveform.org/pricing/">Available in pro only</a>';
+		$html = '';
+		if (isset($_REQUEST['section'])) {
+			$args = array();
+			// Check if token was given
+			if (isset($_REQUEST['token'])) {
+				// If token exists request has to be fetched
+				if ($_REQUEST['token'] == '') {
+					return 'No requests found';
+				}
+				$args = array('token' => $_REQUEST['token']);
+			}
+			// If a reply was given using a token
+			if ($_REQUEST['section'] == 'reply') {
+				// Save the replies
+				$this->handle_replies(); // @TODO make a separate function called "handle_public_replies"
+			}
+
+			$html .= $this->view_get_request_data($args);
+		} else {
+			// No token given. Render the regular query view
+			$html_data = array();
+			$html .= $this->get_html('query', $html_data);
+		}
 
 		return $html;
 	}
@@ -472,8 +563,47 @@ class liveforms {
 	 * @return type string HTML
 	 */
 	function view_agent() {
-		$html = '<a href="http://liveform.org/pricing/">Available in pro only</a>';
+		$html = '';
+		// Check if the current user is agent
+		if (current_user_can('agent')) {
+			// Validate if a certain section was requested
+			if (isset($_REQUEST['section'])) {
+				// Setup default arguments to fetch data for the view HTML
+				$args = array(
+					'fid' => $_REQUEST['form_id'],
+				);
+				// Return HTML for request/entry list
+				switch ($_REQUEST['section']) {
+					case 'requests':
+						$html .= $this->view_agent_requests();
+						break;
+					case 'request':
+						$args['reply_for'] = $_REQUEST['req_id'];
+						$html .= $this->view_get_request_data($args);
+						break;
+					case 'reply':
+						$this->handle_replies();
+						$html .= $this->view_get_request_data($args);
+						break;
+				}
+			} else {
+				// Generate list of assigned forms
+				$html_data = array();
+				$agent_forms = get_user_meta($user_id = get_current_user_id(), $meta_key = 'form_ids', $single = true);
+				$forms = array();
+				if (is_array($agent_forms) && count($agent_forms) > 0) {
+					foreach ($agent_forms as $form) {
+						$forms[] = get_post($form_id = $form, ARRAY_A);
+					}
+				}
 
+				$html_data['agent_forms'] = $forms;
+				$html .= $this->get_html('agent_dashboard', $html_data);
+			}
+		} else {
+			$html_data = array();
+			$html = $this->get_html('agent_login', $html_data);
+		}
 
 		return $html;
 	}
@@ -486,8 +616,9 @@ class liveforms {
 	 */
 	function view_list_agents($post) {
 		$formdata = get_post_meta($post->ID, 'form_data', true);
+		$agent_users = get_users(array('role' => 'agent'));
 		$html_data = array(
-			'agents' => array(),
+			'agents' => $agent_users,
 			'agent_id' => isset($formdata['agent']) ? $formdata['agent'] : null
 		);
 		$html = $this->get_html('list_agents', $html_data);
@@ -510,8 +641,10 @@ class liveforms {
 			if (isset($_REQUEST['form_id'])) {
 				$args = array(
 					'form_id' => $_REQUEST['form_id'],
-					'template' => 'showreqs'
 				);
+				if (isset($_REQUEST['status']))
+					$args['status'] = $_REQUEST['status'];
+					$args['template'] = 'showreqs';
 				$html .= $this->action_get_reqlist($args);
 			} else {
 				$html .= 'You cannot manage this form';
@@ -532,8 +665,9 @@ class liveforms {
 	 * @return type string HTML
 	 */
 	function admin_view_submitted_forms() {
+		$html = '';
 		$forms_list = query_posts('post_type=form');
-        $html = '';
+		wp_reset_query();
 		$select_html = "<div class='w3eden'>";
 		$select_html .= "<div class='container-fluid'><div class='row row-bottom-buffer'><form class='form' method='post' action='' >";
 		$select_html .= '<input type="hidden" name="section" value="requests" />';
@@ -587,69 +721,92 @@ class liveforms {
 		echo $html;
 	}
 
+
+	/**
+	 * @function admin_view_global_stats
+	 * @uses Render the statistics page in the Admin panel 
+	 * @return type string HTML
+	 */
 	function admin_view_global_stats() {
 		global $wpdb;
 
 		$form_query = 'post_type=form';
 
+		$all_stats_query = "SELECT * FROM {$wpdb->prefix}liveforms_stats";
+		$all_stats = $wpdb->get_results($all_stats_query, ARRAY_A);
+
 		$forms_list = query_posts('post_type=form');
+		wp_reset_query();
+
+		$formtitles = array();
+		$form_ids = array();
+		foreach($forms_list as $form) {
+			$form_ids[$form->ID] = $form->post_title;
+			$formtitles[$form->ID] = $form->post_title;
+		}
+
 		$max_views = -1;
 		$max_submits = -1;
 
 		$max_viewed_form = null;
 		$max_submitted_form = null;
-		$form_ids = array();
+		
+		$view_counts = array();
+		$submit_counts = array();
+		$view_count = 0;
+		$submit_count = 0;
 
-		foreach ($forms_list as $form) {
-			$form_ids[$form->ID] = $form->post_title;
-			$query = "SELECT * FROM {$wpdb->prefix}liveforms_stats where `fid`='{$form->ID}'";
-			$results = $wpdb->get_results($query, ARRAY_A);
-			$view_count = get_post_meta($form->ID, 'view_count', true);
-			$submit_count = get_post_meta($form->ID, 'submit_count', true);
-
-			if ($view_count > $max_views) {
-				$max_views = $view_count;
-				$max_viewed_form = array(
-					'label' => $form->post_title,
-					'value' => $form->ID
-				);
-			}
-			if ($submit_count > $max_submits) {
-				$max_submits = $submit_count;
-				$max_submitted_form = array(
-					'label' => $form->post_title,
-					'value' => $form->ID
-				);
-			}
-
-			foreach ($results as $result) {
-				if ($result['action'] == 'v') {
-					$view_count_stats[$form->ID][] = array(
-						'ip' => $result['ip'],
+		foreach($all_stats as $stat) {
+			switch($stat['action']) {
+				case 'v':
+					$view_counts[$stat['fid']] = isset($view_counts[$stat['fid']]) ? $view_counts[$stat['fid']]++ : 1;
+					$view_count += $view_counts[$stat['fid']];
+					$view_count_stats[$stat['fid']][] = array(
+						'ip' => $stat['ip'],
 						'time' => array(
-							'second' => date('Y-m-d H:m:s', $result['time']),
-							'minute' => date('Y-m-d H:m', $result['time']),
-							'hour' => date('Y-m-d h', $result['time']),
-							'day' => date('Y-m-d', $result['time']),
-							'month' => date('Y-m', $result['time']),
-							'year' => date('Y', $result['time'])
+							'second' => date('Y-m-d H:m:s', $stat['time']),
+							'minute' => date('Y-m-d H:m', $stat['time']),
+							'hour' => date('Y-m-d h', $stat['time']),
+							'day' => date('Y-m-d', $stat['time']),
+							'month' => date('Y-m', $stat['time']),
+							'year' => date('Y', $stat['time'])
 						)
 					);
-				} else {
-					$submit_count_stats[$form->ID][] = array(
-						'ip' => $result['ip'],
+					break;
+				case 's':
+					$submit_counts[$stat['fid']] = isset($submit_counts[$stat['fid']]) ? $submit_counts[$stat['fid']]++ : 1;
+					$submit_count += $submit_counts[$stat['fid']];
+					$submit_count_stats[$stat['fid']][] = array(
+						'ip' => $stat['ip'],
 						'time' => array(
-							'second' => date('Y-m-d H:m:s', $result['time']),
-							'minute' => date('Y-m-d H:m', $result['time']),
-							'hour' => date('Y-m-d h', $result['time']),
-							'day' => date('Y-m-d', $result['time']),
-							'month' => date('Y-m', $result['time']),
-							'year' => date('Y', $result['time'])
+							'second' => date('Y-m-d H:m:s', $stat['time']),
+							'minute' => date('Y-m-d H:m', $stat['time']),
+							'hour' => date('Y-m-d h', $stat['time']),
+							'day' => date('Y-m-d', $stat['time']),
+							'month' => date('Y-m', $stat['time']),
+							'year' => date('Y', $stat['time'])
 						)
+					);
+					break;
+			}
+			if (isset($formtitles[$stat['fid']])) {
+				if ($view_count > $max_views) {
+					$max_views = $view_count;
+					$max_viewed_form = array(
+						'label' => $formtitles[$stat['fid']],
+						'value' => $stat['fid']
+					);
+				}
+				if ($submit_count > $max_submits) {
+					$max_submits = $submit_count;
+					$max_submitted_form = array(
+						'label' => $formtitles[$stat['fid']],
+						'value' => $stat['fid']
 					);
 				}
 			}
 		}
+
 
 		$stats = array(
 			'max_submitted_form' => array(
@@ -684,14 +841,18 @@ class liveforms {
 			'stats' => $stats
 		);
 
-		
-
 		$html = $this->get_html('stats_global', $html_data);
 
 		echo $html;
 	}
 
 	/** View callers * */
+	
+	/**
+	 * @function view_createnew
+	 * @uses Render the Form builder window for building form
+	 * @return type string HTML
+	 */
 	function view_createnew($post) {
 		$formdata = get_post_meta($post->ID, 'form_data', $single = true);
 		$html_data = array(
@@ -717,7 +878,7 @@ class liveforms {
 				'fields_generic' => $this->fields_generic,
 				'fields_advanced' => $this->fields_advanced
 			));
-			$html_data = array_merge($paginated_form, array('form_id' => $form_id));
+			$html_data = array_merge($paginated_form, array('form_id' => $form_id, 'formsetting' => $formdata));
 			$view = $this->get_html("showform", $html_data);
 
 			// Record the view
@@ -729,6 +890,53 @@ class liveforms {
 	}
 
 	/** Action callers * */
+	/**
+	 * @function ajax_action_upadate_agent
+	 * @uses Update the agent info using AJAX from the User 
+	 * @return type ajax response 
+	 */
+	public function ajax_action_upadate_agent() {
+		if ($this->is_ajax() and isset($_REQUEST['section']) and $_REQUEST['section'] == 'update_agent') {
+			$agent_info = $_REQUEST['agentinfo'];
+			$display_name = $agent_info['display_name'];
+			$password = $agent_info['password'];
+			$email = $agent_info['email'];
+
+			$response = '';
+			
+			if ($password != $agent_info['confirm_password']) {
+				$reponse = array('message' => 'Password fields did not match', 'action' => 'danger');
+			} else if (strlen($display_name)<5) {
+				$reponse = array('message' => 'Display name must be at least 5 characters long', 'action' => 'danger');
+			} else if (!is_valid_email($email)) {
+				$reponse = array('message' => 'You must enter a valid email address', 'action' => 'danger');
+			} else {
+				$reponse = array('message' => 'Your profile has been updated successfully', 'action' => 'success');
+				// Update the info
+				$info = array(
+					'ID' => get_current_user_id(),
+					'display_name' => $display_name,
+					'email' => $email
+				);
+				if (strlen($password) > 0) {
+				   $info['user_pass'] = $password;
+				}
+				wp_update_user($info);
+			}
+
+			$response = json_encode($reponse);
+
+			echo $response;
+
+			die();
+		}
+	}
+
+	/**
+	 * @function ajax_action_submit_form
+	 * @uses Submit form using AJAX
+	 * @return type ajax response 
+	 */
 	public function ajax_action_submit_form() {
 		if ($this->is_ajax() && isset($_REQUEST['action']) && $_REQUEST['action'] == 'submit_form') {
 			$form_id = $_REQUEST['form_id'];
@@ -760,8 +968,9 @@ class liveforms {
 			$form_entry = array('data' => $data, 'fid' => $form_id, 'status' => 'new', 'token' => $token, 'time' => time());
 
 			$form_entry = apply_filters("liveform_before_form_submit", $form_entry);
-                                        
-                       
+
+			do_action("liveform_before_form_submit", $form_entry);
+
 			global $wpdb;
 
 			// Insert the request into the database
@@ -773,32 +982,39 @@ class liveforms {
 
 			do_action("liveform_after_form_submitted", $form_entry, $submission_id);
 
-            $field_names_for_email = $this->get_field_names($data, $form_data);
-
 			//Preparing Email
 			//Fetching user infos for email
-                                        
+			$form_agent_id = $form_data['agent'];
+			$form_agent_info = get_userdata($form_agent_id);
+			$form_agent_email = is_object($form_agent_info) ? $form_agent_info->user_email : '';
 			$from_email = $form_data['email'];
 			$from_name = $form_data['from'];
 
 			// Prepare entry data for email template injection
 			$email_template_data = array_merge(array('fid' => $form_id, 'status' => 'new', 'token' => $token), maybe_unserialize($data));
 
+			$field_names_for_email = $this->get_field_names($data, $form_data);
 			//to user
+
 			$site_name = get_bloginfo('name');
+			$user_email_text = isset($form_data['email_text']) ? $form_data['email_text'] : "Thanks for your visit to {$site_name}. We are glad that you contacted with us. ";
 			$user_email_data['subject'] = "[{$site_name}] Thanks for contacting with us";
-			$user_email_data['message'] = "Thank You, Your request will be processed within 24 hours. ";
+			$user_email_data['message'] = "{$user_email_text}.<br/>To gain further access to your submitted request, use this token: [ {$token} ]<br/>Submitted data:<br/>";
+			foreach (maybe_unserialize($data) as $field_name => $entry_value) {
+				if (!is_string($entry_value)) $entry_value = get_concatenated_string($entry_value);
+
+				$user_email_data['message'] .= "{$field_names_for_email[$field_name]}: {$entry_value}<br/>";
+			}
 			$user_email_data['to'] = $emails;
 			$user_email_data['from_email'] = $from_email;
 			$user_email_data['from_name'] = $from_name;
 
 			$user_email_data = apply_filters('user_email_data', $user_email_data, $form_id, maybe_unserialize($email_template_data));
-                         if(!empty($from_email)) {
-                            $headers = "From: \"{$user_email_data['from_name']}\" <{$user_email_data['from_email']}>\r\n";
-                        } else {
-                            $headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
-                        }
-			//$headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
+			if(!empty($from_email)) {
+		                $headers = "From: \"{$user_email_data['from_name']}\" <{$user_email_data['from_email']}>\r\n";
+		            } else {
+		                $headers = "{$user_email_data['from_name']} <{$user_email_data['from_email']}>\r\n";
+		            }
 			$headers .= "Content-type: text/html";
 			if (isset($user_email_data['subject']) || isset($user_email_data['message'])) {
 				foreach ($user_email_data['to'] as $email) {
@@ -808,9 +1024,11 @@ class liveforms {
 
 			//to form admin
 			$admin_email_data['subject'] = "[{$site_name}] Form submitted";
-			$admin_email_data['message'] = "New form submission on your site {$site_name}.<br/>\n";
+			$admin_email_data['message'] = "New form submission on you site {$site_name}.<br/>";
 			foreach (maybe_unserialize($data) as $field_name => $entry_value) {
-				$admin_email_data['message'] .= "{$field_names_for_email[$field_name]}: {$entry_value}<br/>\n";
+				if (!is_string($entry_value)) $entry_value = get_concatenated_string($entry_value);
+
+				$admin_email_data['message'] .= "{$field_names_for_email[$field_name]}: {$entry_value}<br/>";
 			}
 			$admin_email_data['to'] = $from_email;
 			$admin_email_data['from_email'] = $from_email;
@@ -820,13 +1038,51 @@ class liveforms {
 			$headers .= "Content-type: text/html";
 			wp_mail($admin_email_data['to'], $admin_email_data['subject'], $admin_email_data['message'], $headers);
 
-                                        
+			//to form agent
+			if ($form_agent_id) {
+				$agent_email_data['subject'] = "[{$site_name}] Form submitted";
+				$agent_email_data['message'] = "A new submisstion has been made to {$site_name} through a form you have been assigned to. Please check back.\n";
+				foreach (maybe_unserialize($data) as $field_name => $entry_value) {
+					if (!is_string($entry_value)) $entry_value = get_concatenated_string($entry_value);
+
+					$agent_email_data['message'] .= "{$field_names_for_email[$field_name]}: {$entry_value}<br/>";
+				}
+				$agent_email_data['to'] = $form_agent_email;
+				$agent_email_data['from_email'] = $from_email;
+				$agent_email_data['from_name'] = $from_name;
+				$agent_email_data = apply_filters('agent_email_data', $agent_email_data, $form_id, maybe_unserialize($email_template_data));
+				$headers = "{$agent_email_data['from_name']} <{$agent_email_data['from_email']}>\r\n";
+				$headers .= "Content-type: text/html";
+				wp_mail($agent_email_data['to'], $agent_email_data['subject'], $agent_email_data['message'], $headers);
+			}
+
 
 			// Increment the form submit count by 1
 			// $this->form_submit_count($form_id);
 
+
 			$data = maybe_unserialize($data);
-                                        
+			if ($this->has_payment_fields($data)) {
+				$pay_details = $this->payment_fields($data);
+				$payment_field = $pay_details['field'];
+
+				$payment_data = array(
+					'method' => $pay_details['method'],
+					'amount' => $form_data['fieldsinfo'][$payment_field]['amount'],
+					'currency' => $form_data['fieldsinfo'][$payment_field]['currency'],
+					'extraparams' => $submission_id,
+					'methodparams' => $form_data['fieldsinfo'][$payment_field]['paymethods'][ucwords($pay_details['method'])]
+				);
+
+				$pay_object = new Liveforms_Payment($payment_data);
+				$jdata['paymentform'] = $pay_object->pay($payment_data);
+				$jdata['action'] = 'payment';
+				echo json_encode($jdata);
+
+				// Hook the payment notifier
+
+				die();
+			}
 
             $return_data = array();
             $return_data['message'] = apply_filters("liveform_submitform_thankyou_message",stripslashes($form_data['thankyou']));
@@ -834,28 +1090,25 @@ class liveforms {
             echo json_encode($return_data);
 			die();
 		}
-
-
 	}
 
-    /**
-     * @function get_field_names
-     * @uses Extract field names from serialized form data and prepare an array with ID => Label
-     * @return type array
-     */
-    function get_field_names($ef_data, $ef_form_data) {
-        $ef_data = maybe_unserialize($ef_data);
-        $ef_form_data = maybe_unserialize($ef_form_data);
-        $ef_prep_fields = array();
 
-        foreach($ef_data as $ef_name => $ef_value) {
-            $ef_prep_fields[$ef_name] = $ef_form_data['fieldsinfo'][$ef_name]['label'];
-        }
-
-        return $ef_prep_fields;
-    }
+	/**
+	 * @function add_payment_verification_hook
+	 * @uses Payment verification hook
+	 * @return type ajax response 
+	 */
+	function add_payment_verification_hook() {
+		$pay_object = new Liveforms_Payment();
+		$pay_object->payment_verification();
+	}
 
 	/** Library to get template * */
+	/**
+	 * @function get_html
+	 * @uses Main rendering engine for views
+	 * @return type HTML output
+	 */
 	function get_html($view, $html_data) {
 		if (empty($view))
 			return null;
@@ -866,6 +1119,13 @@ class liveforms {
 		return $data;
 	}
 
+
+	/**
+	 * @function entry_has_emails
+	 * @uses Check if form submission (form structure) has any email fields or not
+	 * @returns List of emails submitted via the form
+	 * @return type formatted array of string
+	 */
 	function entry_has_emails($data) {
 		$emails = array();
 		if (!is_array($data))
@@ -877,6 +1137,12 @@ class liveforms {
 		return $emails;
 	}
 
+	/**
+	 * @function view_get_request_data
+	 * @uses Gather and return all the data submitted during a form submission along
+	 *		  with any responses done afterwards to that request
+	 * @return type HTML output
+	 */
 	function view_get_request_data($args = array()) {
 		global $wpdb;
 		// initialize view output
@@ -967,9 +1233,15 @@ class liveforms {
 		return $html;
 	}
 
+	/**
+	 * @function handle_replies
+	 * @uses Record replies done via the response system
+	 * @return type Reply insertion id
+	 */
 	function handle_replies() {
 		global $wpdb;
 		$user_id = is_user_logged_in() ? get_current_user_id() : -1;
+		
 		$reply_data = array();
 		if (!current_user_can('agent') && !current_user_can('manage_options')) {
 			$reply_data['uid'] = $user_id;
@@ -982,6 +1254,7 @@ class liveforms {
 		$reply_data['reply_for'] = $_REQUEST['req_id'];
 		$reply_data['fid'] = $_REQUEST['form_id'];
 		$reply_data['time'] = time();
+		
 
 		if ($_REQUEST['req_status'] == "new") { // no previous replies have been issued
 			$request_status_update_query = "update {$wpdb->prefix}liveforms_conreqs set `status`='inprogress' where `id`='{$_REQUEST['req_id']}'";
@@ -999,6 +1272,11 @@ class liveforms {
 		return $wpdb->insert_id;
 	}
 
+	/**
+	 * @function action_get_reqlist
+	 * @uses Get a list of requests submitted via a particular form
+	 * @return type html render ouptut
+	 */
 	function action_get_reqlist($args) {
 		global $wpdb;
 
@@ -1032,17 +1310,17 @@ class liveforms {
 		$req_count = $wpdb->get_row($count_query, ARRAY_A);
 
 		// Counting query states [new, inprogress, onhold, resolved]
-		$new_request_query = $count_query_prefix . " `status`='new'";
+		$new_request_query = $count_query . " and `status`='new'";
 		$new_request_count = $wpdb->get_row($new_request_query, ARRAY_A);
-		$inprogress_request_query = $count_query_prefix . " `status`='inprogress'";
+		$inprogress_request_query = $count_query . " and `status`='inprogress'";
 		$inprogress_request_count = $wpdb->get_row($inprogress_request_query, ARRAY_A);
-		$onhold_request_query = $count_query_prefix . " `status`='onhold'";
+		$onhold_request_query = $count_query . " and `status`='onhold'";
 		$onhold_request_count = $wpdb->get_row($onhold_request_query, ARRAY_A);
-		$resolved_request_query = $count_query_prefix . " `status`='resolved'";
+		$resolved_request_query = $count_query . " and `status`='resolved'";
 		$resolved_request_count = $wpdb->get_row($resolved_request_query, ARRAY_A);
 
 		//Pagination
-		$items_per_page = isset($_REQUEST['ipp']) ? $_REQUEST['ipp'] : 5;
+		$items_per_page = isset($_REQUEST['ipp']) ? $_REQUEST['ipp'] : 20;
 		$page_id = isset($_REQUEST['paged']) ? intval($_REQUEST['paged']) - 1 : 0 ;
 		$starting_item = intval($page_id) * intval($items_per_page);
 		$query .= " limit {$starting_item}, {$items_per_page}";
@@ -1079,6 +1357,12 @@ class liveforms {
 		return $form_html;
 	}
 
+
+	/**
+	 * @function add_columns_to_form_list
+	 * @uses Modify the form(post) list in the admin panel and add extra columns
+	 * @return type modified list of colums for wp native post list
+	 */
 	function add_columns_to_form_list($column) {
 		$column['form_id'] = 'Shortcode';
 		$column['view_count'] = 'Views';
@@ -1087,6 +1371,11 @@ class liveforms {
 		return $column;
 	}
 
+	/**
+	 * @function populate_form_list_custom_columns
+	 * @uses Fill up the custom columns added via the 'add_columns_to_form_list' method
+	 * @return type null 
+	 */
 	function populate_form_list_custom_columns($column_name, $post_id) {
 		$custom_field = get_post_custom($post_id);
 		$view_count = get_post_meta($post_id, 'view_count', true) == '' ? 0 : get_post_meta($post_id, 'view_count', true);
@@ -1105,16 +1394,26 @@ class liveforms {
 		}
 	}
 
+	/**
+	 * @function form_preview
+	 * @uses Generate a preview of form
+	 * @return type  HTML render string
+	 */
 	function form_preview($content) {
 		if (get_post_type() != "form")
 			return $content;
 		return do_shortcode("[liveform form_id='" . get_the_ID() . "']");
 	}
 
-	function show_captcha_image() {
+	/**
+	 * @function show_captcha_image
+	 * @uses Generate and server a captcha image 
+	 * @return type  binary image file
+	 */
+		function show_captcha_image() {
 		if (isset($_REQUEST['show_captcha'])) {
 			$coj = new SimpleCaptcha();
-			$coj->CreateImage();
+			echo json_encode($coj->get_image());
 			die();
 		}
 	}
@@ -1122,7 +1421,7 @@ class liveforms {
 	function payment_fields($submission) {
 		$payment_fields = array();
 		foreach ($submission as $key => $value) {
-			if (strstr($key, 'payment_')) {
+			if (strstr($key, 'Payment_')) {
 				$payment_fields = array('field' => $key,
 					'method' => $submission[$key]
 				);
@@ -1133,9 +1432,14 @@ class liveforms {
 		return null;
 	}
 
+	/**
+	 * @function has_payment_fields
+	 * @uses Checks if submission has any pay methods
+	 * @return type boolean 
+	 */
 	function has_payment_fields($submission) {
 		foreach ($submission as $key => $value) {
-			if (strstr($key, 'payment_')) {
+			if (strstr($key, 'Payment_')) {
 				return true;
 			}
 		}
@@ -1143,22 +1447,52 @@ class liveforms {
 		return false;
 	}
 
+	/**
+	 * @function record_view_stat
+	 * @uses Record and increment the view count of a form by 1 and store the ip used
+	 * @return type  null
+	 */
 	function record_view_stat($form_id, $ip = 'not acquired') {
 		global $wpdb;
-
+		$form_data = get_post($form_id);
+		$form_author_id = $form_data->post_author;
 		$view_count = get_post_meta($form_id, 'view_count', true);
 		if ($view_count == '') {
 			$view_count = 0;
 		}
 		update_post_meta($form_id, 'view_count', $view_count + 1);
 
-       	$current_time = time();
-		$wpdb->query("INSERT into {$wpdb->prefix}liveforms_stats SET `fid`='{$form_id}', `action`='v', `ip`='{$ip}', `time`='{$current_time}' ");
+		$current_time = time();
+		$wpdb->query("INSERT into {$wpdb->prefix}liveforms_stats SET `fid`='{$form_id}', `author_id`='{$form_author_id}', `action`='v', `ip`='{$ip}', `time`='{$current_time}' ");
 	}
 
+
+	/**
+	 * @function get_field_names
+	 * @uses Extract field names from serialized form data and prepare an array with ID => Label 
+	 * @return type array 
+	 */
+	function get_field_names($ef_data, $ef_form_data) {
+		$ef_data = maybe_unserialize($ef_data);
+		$ef_form_data = maybe_unserialize($ef_form_data);
+		$ef_prep_fields = array();
+
+		foreach($ef_data as $ef_name => $ef_value) {
+			$ef_prep_fields[$ef_name] = $ef_form_data['fieldsinfo'][$ef_name]['label'];
+		}
+
+		return $ef_prep_fields;
+	}
+
+	/**
+	 * @function record_submission_stat
+	 * @uses Record and increment the submission count of a form by 1 and store the ip used
+	 * @return type  null
+	 */
 	function record_submission_stat($form_id, $ip = 'not acquired') {
 		global $wpdb;
-
+		$form_data = get_post($form_id);
+		$form_author_id = $form_data->post_author;
 		$submit_count = get_post_meta($form_id, 'submit_count', true);
 		if ($submit_count == '') {
 			$submit_count = 0;
@@ -1166,11 +1500,30 @@ class liveforms {
 		update_post_meta($form_id, 'submit_count', $submit_count + 1);
 
 		$current_time = time();
-		$wpdb->query("INSERT into {$wpdb->prefix}liveforms_stats SET `fid`='{$form_id}', `action`='s', `ip`='{$ip}', `time`='{$current_time}' ");
+		$wpdb->query("INSERT into {$wpdb->prefix}liveforms_stats SET `fid`='{$form_id}', `author_id`='{$form_author_id}', `action`='s', `ip`='{$ip}', `time`='{$current_time}' ");
 	}
 
 	function liveform_submitform_thankyou_message($message) {
 		return $message;
+	}
+
+	/**
+	 * @function autoload_field_classes
+	 * @uses Autoloader to load field classes when they are used
+	 * @return type  null
+	 */
+	public static function autoload_field_classes() {
+		$field_class_directories = array(
+			LF_BASE_DIR . 'formfields/common/',
+			LF_BASE_DIR . 'formfields/generic/',
+			LF_BASE_DIR . 'formfields/advanced/'
+		);
+		foreach($field_class_directories as $dir) {
+			$class_files = scandir($dir);
+			for($it=2 ; $it<count($class_files) ; $it++) {
+				include $dir.$class_files[$it];
+			}
+		}
 	}
 
 }

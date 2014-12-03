@@ -3,12 +3,11 @@
 class formfields{
 
     public static  function text($params = array('id'=>'','required'=>'')){
-		$validator = "";
-		$reqmsg = htmlspecialchars($params['reqmsg'] == '' ? 'This field is required' : $params['reqmsg']);
-		if (isset($params['required']) && $params['required'] == true) {
-			$validator = "data-rule-".$params['validation']."='true' data-msg-required='{$reqmsg}'";
-		}
-        return "<input type='text' {$validator} name='submitform[{$params['id']}]' class='form-control' value=''".required($params)." />";
+        return "<input type='text' name='submitform[{$params['id']}]' class='form-control' value=''".required($params)." />";
+    }
+	
+	public static  function email($params = array('id'=>'','required'=>'')){
+        return "<input type='text' name='submitform[{$params['id']}]' class='form-control' value=''".required($params)." />";
     }
 
     public static  function radio($params = array('id'=>'','required'=>'','options'=>array('name'=>array(),'value'=>array()))) {
@@ -48,11 +47,8 @@ class formfields{
         $params['lines'] = '4';
         $params['validation'] = 'text';
         $class = isset($params['class'])?$params['class']:'col-md-12';
-		$validator = "";
-		if (isset($params['required']) && $params['required'] == true) {
-			$validator = "data-rule-text='true' data-msg-required='Please fill this field'";
-		}
-        return "<textarea {$validator} class='form-control' name='submitform[{$params['id']}]' rows='{$params['lines']}' class='{$class}'".required($params)." > </textarea>";
+		
+        return "<textarea class='form-control' name='submitform[{$params['id']}]' rows='{$params['lines']}' class='{$class}'".required($params)." > </textarea>";
     }
 
     public static  function password($params = array('id'=>'','required'=>'')) {

@@ -214,16 +214,3 @@ a:active{
 .w3eden .panel a.panel-title{
     font-size: 10pt !important;
 }
-
-
-.w3eden #allformfields .panel-default > .panel-heading a{
-    color: #ffffff !important;
-}
-
-.w3eden .data-loading{
-    position: absolute;
-    padding: 5px 15px;
-    border-radius: 3px;
-    background: rgba(0,0,0,0.6);
-    color: #ffffff;
-}

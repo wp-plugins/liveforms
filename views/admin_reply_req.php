@@ -1,10 +1,8 @@
 <?php
-// Setup wordpress URL prefix
-$url = get_permalink(get_the_ID());
-$sap = strpos($url, "?") ? "&" : "?";
-$purl = $url . $sap;
+$purl = '?';
 // Admin panel access
 $purl .= "post_type={$_REQUEST['post_type']}&page={$_REQUEST['page']}&";
+$non_submit_fields = array('Pageseparator', 'Mathresult');
 ?>
 <div class="container-fluid">
 	<div class="row">
@@ -15,10 +13,12 @@ $purl .= "post_type={$_REQUEST['post_type']}&page={$_REQUEST['page']}&";
 				</div>
 				<div class="panel-body">
 					<?php foreach ($form_fields as $field_id => $field_pref) { ?>
+						<?php if (!in_array(substr($field_id, 0, strpos($field_id, '_')), $non_submit_fields)) { ?>
 						<div class="form-group">
 							<label><?php echo $field_pref['label'] ?>: </label>
-							<div><strong><?php echo $field_values[$field_id]; ?></strong></div>
+							<div><strong><?php echo is_array($field_values[$field_id]) ? implode(', ', $field_values[$field_id]) : $field_values[$field_id] ?></strong></div>
 						</div>
+						<?php } ?>
 					<?php } ?>
 					<hr/>
 				</div>

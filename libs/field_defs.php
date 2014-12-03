@@ -3,9 +3,13 @@
 function set_commonfields() {
 	$fields = array();
 	$fields['name'] = array('type' => 'text', 'label' => 'Name');
-	$fields['email'] = array('type' => 'text', 'label' => 'Email');
+	$fields['email'] = array('type' => 'email', 'label' => 'Email', 'template' => 'email');
 	$fields['subject'] = array('type' => 'text', 'label' => 'Subject');
 	$fields['message'] = array('type' => 'textarea', 'label' => 'Message');
+
+	$fields = array(
+		'Name', 'Email', 'Subject', 'Message'
+	);
 
 	return $fields;
 }
@@ -43,6 +47,7 @@ function set_genericfields() {
 			'label' => 'Textarea'
 		)
 	);
+	return array('Text', 'Textarea', 'Number', 'Password', 'Radio', 'Select', 'Checkbox');
 	return $generic_fields;
 }
 
@@ -58,7 +63,8 @@ function set_advancedfields() {
 		),
 		'captcha' => array(
 			'type' => 'captcha',
-			'label' => 'Captcha'
+			'label' => 'Captcha',
+			'template' => 'captcha'
 		),
 		'fullname' => array(
 			'type' => 'fullname',
@@ -77,26 +83,73 @@ function set_advancedfields() {
 			'type' => 'payment',
 			'label' => 'Payment methods',
 			'template' => 'payment'
+		),
+		'url' => array(
+			'type' => 'url',
+			'label' => 'Website',
+			'template' => 'url'
+		),
+		'date' => array(
+			'type' => 'date',
+			'label' => 'Date',
+			'template' => 'date'
+		),
+		'daterange' => array(
+			'type' => 'daterange',
+			'label' => 'Date range',
+			'template' => 'daterange'
+		),
+		'location' => array(
+			'type' => 'location',
+			'label' => 'Location',
+			'template' => 'location'
+		),
+		'phone' => array(
+			'type' => 'phone',
+			'label' => 'Phone',
+			'template' => 'phone'
+		),
+		'paragraph_text' => array(
+			'type' => 'paragraph_text',
+			'label' => 'Paragraph text',
+			'template' => 'paratext'
+		),
+		'rating' => array(
+			'type' => 'rating',
+			'label' => 'Rating',
+			'template' => 'rating'
 		)
 	);
+	return array('File', 'Captcha', 'FullName', 'Address', 'Rating', 'Url', 'Paratext', 'Phone', 'Payment', 'Location', 'Date', 'Daterange','Mathresult', 'Pageseparator');
 	return $advanced_fields;
 }
 
 add_filter("advanced_fields", "set_advancedfields");
 
 function set_methods() {
-	$methods_set = array();
-	$methods_set = array(
-		'paypal' => 'PayPal',
-		'2checkout' => '2Checkout',
-		'skrill' => 'Skrill',
-		'payza' => 'PayZa',
-		'authorizenet' => 'Authorize.net'
-	);
+	global $methods_set;
 	return $methods_set;
 }
 
 add_filter("method_set", "set_methods");
+
+function get_validation_ops($type = '') {
+	$optional_validation_ops = array(
+		'url' => array('url' => 'URL'),
+		'email' => array('email' => 'Email'),
+		'date' => array('date' => 'Date'),
+		'text' => array('text' => 'Text'),
+		'numeric' => array('numeric' => 'Numeric')
+	);
+
+	$default_validation_ops = array('text' => 'Text', 'numeric' => 'Numeric', 'email' => 'Email', 'url' => 'URL', 'date' => 'Date');
+	if ($type == '') $validation_ops = $default_validation_ops;
+	else {
+		$validation_ops = $optional_validation_ops[$type];
+	}
+
+	return $validation_ops;
+}
 
 function currencies() {
 	$currencies_list = array(

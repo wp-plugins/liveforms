@@ -3,7 +3,7 @@
 $url = get_permalink(get_the_ID());
 $sap = strpos($url, "?") ? "&" : "?";
 $purl = $url . $sap;
-
+$non_submit_fields = array('Pageseparator', 'Mathresult');
 ?>
 <div class="w3eden">
 	<div class="container-fluid">
@@ -15,15 +15,17 @@ $purl = $url . $sap;
 					</div>
 					<div class="panel-body">
 						<?php foreach ($form_fields as $field_id => $field_pref) { ?>
-							<div class="form-group">
-								<label><?php echo $field_pref['label'] ?>: </label>
-								<?php if(strstr($field_id, 'password_')) { ?>
-								<a onclick="return false" class="btn btn-xs btn-danger spoiler-toggler notshowing" data-target="<?php echo 'password_field_'.$field_id ?>">Show</a>
-								<div id="<?php echo 'password_field_'.$field_id ?>" style="display: none;"><strong><?php echo $field_values[$field_id]; ?></strong></div>
-								<?php } else { ?>
-								<div><strong><?php echo $field_values[$field_id]; ?></strong></div>
-								<?php } ?>
-							</div>
+							<?php if (!in_array(substr($field_id, 0, strpos($field_id, '_')), $non_submit_fields)) { ?>
+								<div class="form-group">
+									<label><?php echo $field_pref['label'] ?>: </label>
+									<?php if(strstr($field_id, 'password_')) { ?>
+									<a onclick="return false" class="btn btn-xs btn-danger spoiler-toggler notshowing" data-target="<?php echo 'password_field_'.$field_id ?>">Show</a>
+									<div id="<?php echo 'password_field_'.$field_id ?>" style="display: none;"><strong><?php echo $field_values[$field_id]; ?></strong></div>
+									<?php } else { ?>
+									<div><strong><?php echo $field_values[$field_id]; ?></strong></div>
+									<?php } ?>
+								</div>
+							<?php } ?>
 						<?php } ?>
 						<hr/>
 

@@ -11,21 +11,28 @@ WordPress Live Forms - Visual Form Builder, is an elegant way to build and manag
    
 
 == Description ==
-WordPress Live Forms is an elegant way to build and manage any type of forms simply using Drag and Drop Method. Whether You want to build a contact form, subscription form, client review form or a form for managing your product support section, Live Form could be a best choice for you. This plugin also will give you the capability to assign and manage support agent to each of your forms. Agents can manage and reply support ticket from front-end easily without any admin access. Here you can get it as a WordPress Plugin or as stand alone script or you can even your our hosted solution where you even don’t need your own website.
+WordPress Live Forms Plugin is an elegant way to build and manage any type of forms simply using Drag and Drop Method. Whether You want to build a contact form, subscription form, client review form, payment form or a form for managing your product support section, Live Form - Visual Form Builder Plugin could be a best choice for you. Live Forms - Visual Form Builder plugin also will give you the capability to assign and manage support agent to each of your forms. Agents can manage and reply support ticket from front-end easily without any admin access.  
+ 
 
 = Features =
 * [Visual Builder](http://s.w.org/plugins/liveforms/screenshot-1.png)
-* [Extended Data Validation](http://s.w.org/plugins/liveforms/screenshot-2.png)
+* [Extensive Data Validation](http://s.w.org/plugins/liveforms/screenshot-2.png)
 * [Detailed From Stats/Analytics](http://s.w.org/plugins/liveforms/screenshot-3.png)
 * [Form Entries](http://s.w.org/plugins/liveforms/screenshot-4.png)
-* 4 Commonly Used Fields
-* 6 Generic Form Fields
+* 20+ Form Fields
+* Multi-Step / Multi-Page Form
+* Conditional Logic
+* Captcha Protection
 * Lots of Actions and Filters Hooks to increase its extendibility  
 * Front-end UI Powered by Bootstrap 3
+* File upload
+* Accept Payment with payment field
+* Create full featured support section
+* Multiple agent creation
 
 For More Details Please check [LiveForm.org](http://liveform.org/)
 
-( To unlock some advanced feature and all [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) you will need [Pro Version](http://liveform.org/pricing/) )
+Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more features and options
  
 == Installation ==
 
@@ -39,8 +46,16 @@ For More Details Please check [LiveForm.org](http://liveform.org/)
 2. Form Preview
 3. Form Stats
 4. Form Entries
+5. Paged Form
 
 == Changelog ==
+
+= 1.2.0 =
+* Added 10+ fields
+* Added paged/multi-step form feature
+* Added conditional logic feature
+* Added payment option
+* Added support agent feature
 
 = 1.1.5 =
 * Fixed minor issue with form entry delete

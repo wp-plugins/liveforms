@@ -2,7 +2,7 @@
 	<div class='container-fluid'>
 		<div class='row'>
 			<div class='col-md-12'>
-				<select name='contact[agent]' class='form-control' disabled="disabled" title="Available in pro only!">
+				<select name='contact[agent]' class='form-control'>
 					<option value=''>Select an agent</option>
 					<?php foreach ($agents as $agent) { ?>
 					<?php $agent_data = $agent->data; ?>
