@@ -1,15 +1,11 @@
 <?php
-
-/**
- * @package Live Forms
- * @version 1.0
- */
+                                        
 /*
   Plugin Name: Live Forms
   Plugin URI: http://liveform.org
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.2.0
+  Version: 1.3.0
   Author URI: http://liveform.org
  */
 

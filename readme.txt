@@ -49,6 +49,9 @@ Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more featur
 
 == Changelog ==
 
+= 1.3.0 =
+* Fixed issue with input filtering
+
 = 1.2.0 =
 * Added 10+ fields
 * Added paged/multi-step form feature

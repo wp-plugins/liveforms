@@ -62,6 +62,7 @@ $non_submit_fields = array('Pageseparator', 'Mathresult');
 										foreach ($fieldids as $id) {
 											$value = isset($req[$id]) ? $req[$id] : '';
 											$value = is_array($value) ? implode(", ", $value) : $value;
+                                                                                        $value = htmlspecialchars($value);
 											echo "<td>{$value}&nbsp;</td>";
 										}
 										echo "</tr>";
