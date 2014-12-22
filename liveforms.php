@@ -5,7 +5,7 @@
   Plugin URI: http://liveform.org
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.3.0
+  Version: 1.3.1
   Author URI: http://liveform.org
  */
 
@@ -751,6 +751,8 @@ class liveforms {
 		$submit_counts = array();
 		$view_count = 0;
 		$submit_count = 0;
+                $submit_count_stats = null;
+                
 
 		foreach($all_stats as $stat) {
 			switch($stat['action']) {
@@ -828,7 +830,7 @@ class liveforms {
 		} else {
 			$selected_form_id = 'none';
 		}
-
+                    
 		$html_data = array(
 			'views' => json_encode($view_count_stats),
 			'submits' => json_encode($submit_count_stats),

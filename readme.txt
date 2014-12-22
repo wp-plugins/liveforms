@@ -3,7 +3,7 @@ Contributors: codename065, shahriar0822
 Donate link: http://liveform.org/ 
 Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form, contact forms
 Requires at least: 3.5
-Tested up to: 3.9
+Tested up to: 4.1
 License: GPLv2 or later
  
   
@@ -30,6 +30,37 @@ WordPress Live Forms Plugin is an elegant way to build and manage any type of fo
 * Create full featured support section
 * Multiple agent creation
 
+= Common Form Fields =
+* Name
+* Email
+* Subject
+* Message
+
+= Generic Form Fields = 
+* Text
+* Textarea
+* Number
+* Password
+* Radio
+* Select
+* Checkbox
+
+= Advanced Form Fields =
+* File
+* Captcha
+* Full Name 
+* Address
+* Star Rating
+* URL
+* Paragraph Text
+* Phone 
+* Payment ( PayPal )
+* Location 
+* Date
+* Date Range
+* Math Result
+* Page Separator
+ 
 For More Details Please check [LiveForm.org](http://liveform.org/)
 
 Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more features and options
@@ -48,6 +79,9 @@ Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more featur
 5. Paged Form
 
 == Changelog ==
+
+= 1.3.1 =
+* Compatibility released for WordPress v4.1
 
 = 1.3.0 =
 * Fixed issue with input filtering
