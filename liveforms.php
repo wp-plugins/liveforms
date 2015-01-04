@@ -220,7 +220,7 @@ class liveforms {
      */
     function addons_list(){
 
-        if(!isset($_SESSION['wpdm_addon_store_data']) || 1){
+        if(!isset($_SESSION['wpdm_addon_store_data'])){
             $data = $this->remote_get('http://liveform.org/?wpdm_api=liveformapiz&task=getPackageList');
             $cats = $this->remote_get('http://liveform.org/?wpdm_api_req=getCategoryList');
             $_SESSION['wpdm_addon_store_data'] = $data;
