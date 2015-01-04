@@ -80,6 +80,10 @@ Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more featur
 
 == Changelog ==
 
+= 1.3.2 =
+* Added Add-on Menu
+* Updated form settings
+
 = 1.3.1 =
 * Compatibility released for WordPress v4.1
 

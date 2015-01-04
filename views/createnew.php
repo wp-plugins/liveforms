@@ -135,7 +135,7 @@ $fields = $commonfields;
 								<div class="form-group">
 
 										<label>Button label:</label>
-										<input type="text" class="form-control" name="contact[buttontext]" placeholder="Submit button text" id="buttontext" data-target="#submit_button_sample" value="<?php echo (isset($form_data['buttontext']) ? $form_data['buttontext'] : "") ?>"/> 
+										<input type="text" class="form-control" name="contact[buttontext]" placeholder="Submit button text" id="buttontext" data-target="#submit_button_sample" value="<?php echo (isset($form_data['buttontext']) ? $form_data['buttontext'] : "Submit") ?>"/>
 								</div><div class="form-group">
                                     <label>Button color:</label>
 										<?php $color_selection = array (
@@ -153,7 +153,7 @@ $fields = $commonfields;
 										</select>
                                 </div><div class="form-group">
 										<label form="email">Thank you message: </label>
-										<textarea rows="2" class="form-control" name="contact[thankyou]" placeholder="Thank you message" id="thankyou"><?php echo (isset($form_data['thankyou']) ? $form_data['thankyou'] : "") ?></textarea>
+										<textarea rows="2" class="form-control" name="contact[thankyou]" placeholder="Thank you message" id="thankyou"><?php echo (isset($form_data['thankyou']) ? $form_data['thankyou'] : "Thank You!") ?></textarea>
 									</div>
 								</div>
 							</div>

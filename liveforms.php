@@ -5,7 +5,7 @@
   Plugin URI: http://liveform.org
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.3.1
+  Version: 1.3.2
   Author URI: http://liveform.org
  */
 
@@ -162,6 +162,7 @@ class liveforms {
 		// Submenu item in the "Forms" menu item
 		add_submenu_page('edit.php?post_type=form', __('Form entries'), __('Form entries'), 'manage_options', 'form-entries', array($this, 'admin_view_submitted_forms'));
 		add_submenu_page('edit.php?post_type=form', __('Statistics'), __('Statistics'), 'manage_options', 'statistics', array($this, 'admin_view_global_stats'));
+		add_submenu_page('edit.php?post_type=form', __('Add-ons'), __('Add-ons'), 'manage_options', 'addons', array($this, 'addons_list'));
 		global $submenu;
 		// Agent creation panel
 		$submenu['edit.php?post_type=form'][501] = array(__('Add agents'), 'manage_options', admin_url('user-new.php'));
@@ -184,8 +185,57 @@ class liveforms {
 		return $actions;
 	}
 
+    /**
+     * @param $url
+     * @return mixed
+     */
+
+    function remote_get($url)
+    {
+        $options = array(
+            CURLOPT_RETURNTRANSFER => true, // return web page
+            CURLOPT_HEADER => false, // don't return headers
+            CURLOPT_FOLLOWLOCATION => true, // follow redirects
+            CURLOPT_ENCODING => "", // handle all encodings
+            CURLOPT_USERAGENT => "spider", // who am i
+            CURLOPT_AUTOREFERER => true, // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120, // timeout on connect
+            CURLOPT_TIMEOUT => 120, // timeout on response
+            CURLOPT_MAXREDIRS => 10, // stop after 10 redirects
+        );
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $options);
+        $content = curl_exec($ch);
+        $err = curl_errno($ch);
+        $errmsg = curl_error($ch);
+        $header = curl_getinfo($ch);
+        curl_close($ch);
+        return $content;
+    }
+
+    /**
+     * @function addons_list
+     * @uses Fetch add-on list from server
+     */
+    function addons_list(){
+
+        if(!isset($_SESSION['wpdm_addon_store_data']) || 1){
+            $data = $this->remote_get('http://liveform.org/?wpdm_api=liveformapiz&task=getPackageList');
+            $cats = $this->remote_get('http://liveform.org/?wpdm_api_req=getCategoryList');
+            $_SESSION['wpdm_addon_store_data'] = $data;
+            $_SESSION['wpdm_addon_store_cats'] = $cats;
+        }
+        else {
+            $data = $_SESSION['wpdm_addon_store_data'];
+            $cats = $_SESSION['wpdm_addon_store_cats'];
+        }
+
+        include(dirname(__FILE__)."/views/addons-list.php");
+    }
+
 	/**
-	 * @functino is_ajax
+	 * @function is_ajax
 	 * @uses Library fucntion to check if an ajax request
 	 * is being handled
 	 * @return type boolean
