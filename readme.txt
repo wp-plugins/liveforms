@@ -1,6 +1,6 @@
 === Live Forms - Visual Form Builder ===
 Contributors: codename065, shahriar0822
-Donate link: http://liveform.org/ 
+Donate link: http://liveforms.org/ 
 Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form, contact forms
 Requires at least: 3.5
 Tested up to: 4.1
@@ -29,6 +29,9 @@ WordPress Live Forms Plugin is an elegant way to build and manage any type of fo
 * Accept Payment with payment field
 * Create full featured support section
 * Multiple agent creation
+* Agent Dashboard form replying support ticket
+* Token system for tracking support ticket
+
 
 = Common Form Fields =
 * Name
@@ -61,9 +64,9 @@ WordPress Live Forms Plugin is an elegant way to build and manage any type of fo
 * Math Result
 * Page Separator
  
-For More Details Please check [LiveForm.org](http://liveform.org/)
+For More Details Please check [LiveForm.org](http://liveforms.org/)
 
-Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more features and options
+Check [LiveForm Add-Ons](http://liveforms.org/downloads/add-ons/) for more features and options
  
 == Installation ==
 
@@ -79,6 +82,9 @@ Check [LiveForm Add-Ons](http://liveform.org/downloads/add-ons/) for more featur
 5. Paged Form
 
 == Changelog ==
+
+= 1.3.3 =
+* Fixed issue with sending email to site admin on form submission 
 
 = 1.3.2 =
 * Added Add-on Menu
