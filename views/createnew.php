@@ -155,6 +155,9 @@ $fields = $commonfields;
 										<label form="email">Thank you message: </label>
 										<textarea rows="2" class="form-control" name="contact[thankyou]" placeholder="Thank you message" id="thankyou"><?php echo (isset($form_data['thankyou']) ? $form_data['thankyou'] : "Thank You!") ?></textarea>
 									</div>
+
+                                    <?php do_action("liveforms_form_settings", $form_data); ?>
+
 								</div>
 							</div>
 							<div id="email-settings" class="tab-pane fade">

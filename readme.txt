@@ -83,6 +83,13 @@ Check [LiveForm Add-Ons](http://liveforms.org/downloads/add-ons/) for more featu
 
 == Changelog ==
 
+= 1.3.5 =
+* Added new hook "liveforms_form_settings"
+* Updated css settings to enqueue styles only where it requires
+
+= 1.3.4 =
+* Fixed css issue
+
 = 1.3.3 =
 * Fixed issue with sending email to site admin on form submission 
 

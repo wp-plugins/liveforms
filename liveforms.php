@@ -5,7 +5,7 @@
   Plugin URI: http://liveforms.org/
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.3.4
+  Version: 1.3.5
   Author URI: http://liveforms.org/
  */
 
@@ -295,6 +295,7 @@ class LiveForms {
      * @uses Add the JS and CSS dependencies for loading on the admin accessible sections
      */
     function admin_enqueue_scripts() {
+        if(get_post_type()!='form') return;
         wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
         wp_enqueue_style("lf_bootstrap_theme_css", LF_BASE_URL . "views/css/bootstrap-theme.min.css");
         wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
