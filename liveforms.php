@@ -254,7 +254,7 @@ class LiveForms {
      */
     function enqueue_scripts() {
 
-        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') === 'off')
+        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') !== 'on')
         wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
         wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
         wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/front.css");
@@ -275,7 +275,7 @@ class LiveForms {
         wp_register_script('jquery-validation-plugin', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js', array('jquery'));
         wp_enqueue_script('jquery-validation-plugin');
 
-        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') === 'off')
+        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') !== 'on')
             wp_enqueue_script("lf_bootstrap_js", LF_BASE_URL . "views/js/bootstrap.min.js");
 
         wp_enqueue_script("lf_mustache_js", LF_BASE_URL . "views/js/mustache.js");
