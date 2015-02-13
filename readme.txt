@@ -64,9 +64,9 @@ WordPress Live Forms Plugin is an elegant way to build and manage any type of fo
 * Math Result
 * Page Separator
  
-For More Details Please check [LiveForm.org](http://liveforms.org/)
+For More Details Please check [LiveForms.org](http://liveforms.org/)
 
-Check [LiveForm Add-Ons](http://liveforms.org/downloads/add-ons/) for more features and options
+Check [LiveForms Add-Ons](http://liveforms.org/downloads/add-ons/) for more features and options
  
 == Installation ==
 
@@ -82,6 +82,11 @@ Check [LiveForm Add-Ons](http://liveforms.org/downloads/add-ons/) for more featu
 5. Paged Form
 
 == Changelog ==
+
+= 3.0.1 =
+* Synchronized with old users so that now they can get updates directly from wp.org
+* Added new option to enable/disable bootstrap from front-end
+* Resolved a conflict with download manager plugin
 
 = 1.3.5 =
 * Added new hook "liveforms_form_settings"

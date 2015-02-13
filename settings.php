@@ -3,6 +3,7 @@ if(!defined('WPINC')) {
     exit;
 }
 
+
 class LiveFormsSettings{
     private static $instance;
     private $settings_api;
@@ -10,9 +11,6 @@ class LiveFormsSettings{
         if(self::$instance === null){
             self::$instance = new self;
             self::$instance->actions();
-            if(!class_exists('LiveForm_SettingsAPI')) {
-                require_once LF_BASE_DIR . 'libs/settingsapi.class.php';
-            }
             self::$instance->settings_api = new LiveForm_SettingsAPI;
         }
         return self::$instance;
@@ -58,6 +56,12 @@ class LiveFormsSettings{
         echo '</div>';
         echo '</div>';
     }
+
+    public static function get($option, $section, $default = ''){
+        $sapi = new LiveForm_SettingsAPI();
+        return $sapi->get_option($option, $section, $default);
+    }
+
     
     private function get_settings_sections() {
         $sections[] = array(
@@ -70,14 +74,15 @@ class LiveFormsSettings{
     
     private function get_settings_fields() {
         
-        $settings_fields['liveforms_general_settings'] = array();
-        //array(
-            // 'name' => 'test',
-            // 'label' => __( 'Test', '' ),
-            // 'desc' => __( 'Select <strong>Auto Register</strong> to automatically register upon form submit.', '' ),
-            // 'type' => 'text',
-            // 'default' => '1'
-        //);
+        $settings_fields['liveforms_general_settings'] = array(
+            array(
+                 'name' => 'bootstrap_disabled',
+                 'label' => __( 'Disable Bootstrap', '' ),
+                 'desc' => __( 'You can disable bootstrap if your theme already has it', '' ),
+                 'type' => 'checkbox',
+                 'default' => '1'
+            )
+        );
         
         $settings_fields = apply_filters('liveforms_setting_fields',$settings_fields);
 

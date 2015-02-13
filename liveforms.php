@@ -5,7 +5,7 @@
   Plugin URI: http://liveforms.org/
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 1.3.5
+  Version: 3.0.1
   Author URI: http://liveforms.org/
  */
 
@@ -16,13 +16,16 @@ define("LF_UPLOAD_PATH", WP_CONTENT_DIR . '/uploads/');
 define('LF_ACTIVATED', true);
 
 // Include libraries
-include LF_BASE_DIR . '/libs/advanced-fields.class.php';
-include LF_BASE_DIR . '/libs/payment.class.php';
-include LF_BASE_DIR . '/libs/payment_methods/Paypal/class.Paypal.php';
-include LF_BASE_DIR . '/libs/field_defs.php';
-include LF_BASE_DIR . '/libs/form-fields.class.php';
-include LF_BASE_DIR . '/libs/functions.php';
-include LF_BASE_DIR . '/libs/phpcaptcha/captcha.php';
+
+require_once LF_BASE_DIR . 'libs/settingsapi.class.php';
+require_once LF_BASE_DIR . 'libs/advanced-fields.class.php';
+require_once LF_BASE_DIR . 'libs/payment.class.php';
+require_once LF_BASE_DIR . 'libs/payment_methods/Paypal/class.Paypal.php';
+require_once LF_BASE_DIR . 'libs/field_defs.php';
+require_once LF_BASE_DIR . 'libs/form-fields.class.php';
+require_once LF_BASE_DIR . 'libs/functions.php';
+require_once LF_BASE_DIR . 'libs/phpcaptcha/captcha.php';
+require_once LF_BASE_DIR . 'settings.php';
 
 class LiveForms {
 
@@ -84,7 +87,6 @@ class LiveForms {
 
 
         if(is_admin()){
-            require_once LF_BASE_DIR . 'settings.php';
             LiveFormsSettings::getInstance();
         }
     }
@@ -251,6 +253,8 @@ class LiveForms {
      *
      */
     function enqueue_scripts() {
+
+        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') === 'off')
         wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
         wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");
         wp_enqueue_style("lf_style_css", LF_BASE_URL . "views/css/front.css");
@@ -270,7 +274,10 @@ class LiveForms {
         wp_enqueue_script('jquery-form');
         wp_register_script('jquery-validation-plugin', 'http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js', array('jquery'));
         wp_enqueue_script('jquery-validation-plugin');
-        wp_enqueue_script("lf_bootstrap_js", LF_BASE_URL . "views/js/bootstrap.min.js");
+
+        if(LiveFormsSettings::get('bootstrap_disabled','liveforms_general_settings') === 'off')
+            wp_enqueue_script("lf_bootstrap_js", LF_BASE_URL . "views/js/bootstrap.min.js");
+
         wp_enqueue_script("lf_mustache_js", LF_BASE_URL . "views/js/mustache.js");
         wp_enqueue_script("lf_sha256_js", LF_BASE_URL . "views/js/sha256.js");
         wp_enqueue_script("jquery-ui-core");
@@ -295,7 +302,7 @@ class LiveForms {
      * @uses Add the JS and CSS dependencies for loading on the admin accessible sections
      */
     function admin_enqueue_scripts() {
-        if(get_post_type()!='form') return;
+        if(get_post_type()!='form' && !(isset($_GET['post_type']) && $_GET['post_type']=='form')) return;
         wp_enqueue_style("lf_bootstrap_css", LF_BASE_URL . "views/css/bootstrap.min.css");
         wp_enqueue_style("lf_bootstrap_theme_css", LF_BASE_URL . "views/css/bootstrap-theme.min.css");
         wp_enqueue_style("lf_fontawesome_css", LF_BASE_URL . "views/css/font-awesome.min.css");

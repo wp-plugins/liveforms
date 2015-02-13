@@ -1,12 +1,12 @@
 <?php
-class Payment {
+class PaymentMethods {
 
 	public function control_button() {
 		ob_start();
 		?>
-		<li class="list-group-item" data-type="<?php echo __CLASS__ ?>" for="Payment">
-			<span class="lfi lfi-name"></span> Payment 
-			<a title="Payment" rel="Payment" class="add" data-template='Payment' href="#"><i class="glyphicon glyphicon-plus-sign pull-right ttipf" title=""></i></a>
+		<li class="list-group-item" data-type="<?php echo __CLASS__ ?>" for="PaymentMethods">
+			<span class="lfi lfi-name"></span> Payment Methods
+			<a title="Payment Methods" rel="PaymentMethods" class="add" data-template='PaymentMethods' href="#"><i class="glyphicon glyphicon-plus-sign pull-right ttipf" title=""></i></a>
 	</li>
 	    <?php
 		$control_button_html = ob_get_clean();
@@ -38,7 +38,7 @@ class Payment {
 								<label>Currency</label>
 								<?php $current_selection = $field_infos[$fieldindex]['currency']; ?>
 								<select class='form-control' name="contact[fieldsinfo][<?php echo $fieldindex ?>][currency]">
-									<option value="none" <?php if ($current_selection == 'none') echo 'selected="selected"' ?>>Select a currency</option>
+									<option value="none" <?php if ($current_selection == 'none') echo 'selected="selected"' ?>>Select a Currency</option>
 									<?php foreach(currencies() as $value => $currency) { ?> 
 										<option <?php if ($current_selection == $value) echo 'selected="selected"' ?> value="<?php echo $value ?>"><?php echo $currency ?></option>
 									<?php } ?>
@@ -242,7 +242,7 @@ class Payment {
 	public function configuration_template() {
 		ob_start();
 		?>
-	<script type="text/x-mustache" id="template-Payment">
+	<script type="text/x-mustache" id="template-PaymentMethods">
 		<li class="list-group-item" data-type='<?php echo __CLASS__ ?>' id="field_{{ID}}"><input type="hidden" name="contact[fields][{{ID}}]" value="{{value}}">
 			<span id="label_{{ID}}">{{title}}</span>
 			<a href="#" rel="field_{{ID}}" class="remove"><i class="glyphicon glyphicon-remove-circle pull-right"></i></a>

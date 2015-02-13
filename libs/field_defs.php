@@ -79,10 +79,10 @@ function set_advancedfields() {
 			'label' => 'Page Separator',
 			'template' => 'separator'
 		),
-		'payment' => array(
-			'type' => 'payment',
+		'paymentmethods' => array(
+			'type' => 'paymentmethods',
 			'label' => 'Payment methods',
-			'template' => 'payment'
+			'template' => 'paymentmethods'
 		),
 		'url' => array(
 			'type' => 'url',
@@ -120,7 +120,7 @@ function set_advancedfields() {
 			'template' => 'rating'
 		)
 	);
-	return array('File', 'Captcha', 'FullName', 'Address', 'Rating', 'Url', 'Paratext', 'Phone', 'Payment', 'Location', 'Date', 'Daterange','Mathresult', 'Pageseparator');
+	return array('File', 'Captcha', 'FullName', 'Address', 'Rating', 'Url', 'Paratext', 'Phone', 'PaymentMethods', 'Location', 'Date', 'Daterange','Mathresult', 'Pageseparator');
 	return $advanced_fields;
 }
 

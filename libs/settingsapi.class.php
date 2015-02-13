@@ -162,12 +162,11 @@ class LiveForm_SettingsAPI {
      * @param array   $args settings field args
      */
     function callback_checkbox( $args ) {
-
         $value = esc_attr( $this->get_option( $args['id'], $args['section'], $args['std'] ) );
 
         $html = sprintf( '<input type="hidden" name="%1$s[%2$s]" value="off" />', $args['section'], $args['id'] );
-        $html .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s]" name="%1$s[%2$s]" value="on"%4$s />', $args['section'], $args['id'], $value, checked( $value, 'on', false ) );
-        $html .= sprintf( '<label for="%1$s[%2$s]"> %3$s</label>', $args['section'], $args['id'], $args['desc'] );
+        $html .= sprintf( '<label style="display: block;clear: both;"><input style="display: inline;margin: 0" type="checkbox" class="checkbox" id="%1$s[%2$s]" name="%1$s[%2$s]" value="on"%4$s /> %5$s</label>', $args['section'], $args['id'], $value, checked( $value, 'on', false ), $args['title'] );
+        $html .= sprintf( '<span class="note"> %3$s</span>', $args['section'], $args['id'], $args['desc'] );
 
         echo $html;
     }
@@ -481,14 +480,23 @@ class LiveForm_SettingsAPI {
             return;
 
         foreach ( (array) $wp_settings_fields[$page][$section] as $field ) {
-            echo '<div class="form-group">';
-            if ( !empty($field['args']['label_for']) )
-                echo '<label for="' . esc_attr( $field['args']['label_for'] ) . '">' . $field['title'] . '</label>';
-            else
-                echo '<label>' . $field['title'] . '</label>';
 
-            call_user_func($field['callback'], $field['args']);
-            echo '</div>';
+            if(in_array($field['callback'][1], array('callback_checkbox','callback_radio'))){
+                echo '<div class="form-group">';
+                 $field['args']['title'] = $field['title'];
+                call_user_func($field['callback'], $field['args']);
+                echo '</div>';
+
+            } else {
+                echo '<div class="form-group">';
+                if (!empty($field['args']['label_for']))
+                    echo '<label for="' . esc_attr($field['args']['label_for']) . '">' . $field['title'] . '</label>';
+                else
+                    echo '<label>' . $field['title'] . '</label>';
+
+                call_user_func($field['callback'], $field['args']);
+                echo '</div>';
+            }
         }
     }
 
