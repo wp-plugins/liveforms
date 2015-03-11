@@ -5,7 +5,7 @@
   Plugin URI: http://liveforms.org/
   Description: Drag and Drop Form Builder Form WordPress
   Author: WP Eden
-  Version: 3.0.1
+  Version: 3.2.0
   Author URI: http://liveforms.org/
  */
 
@@ -466,8 +466,8 @@ class LiveForms {
         if ($this->is_ajax() && isset($_REQUEST['section']) && $_REQUEST['section'] == 'stat_req') {
             $_REQUEST['paged'] = 1;
             $ajax_html = $this->action_get_reqlist($args = array(
-                'form_id' => $_REQUEST['form_id'],
-                'status' => $_REQUEST['status'],
+                'form_id' => (int)$_REQUEST['form_id'],
+                'status' => esc_attr($_REQUEST['status']),
                 'template' => 'showreqs_ajax'
             ));
             echo $ajax_html;
@@ -533,14 +533,17 @@ class LiveForms {
     function ajax_submit_change_request_state() {
         if ($this->is_ajax() && isset($_REQUEST['action']) && $_REQUEST['action'] == 'change_req_state') {
             if (isset($_REQUEST['ids'])) {
-                $ids = implode(",", $_REQUEST['ids']);
+                foreach($_REQUEST['ids'] as $id){
+                    $ids[] = (int)$id;
+                }
+                $ids = implode(",", $ids);
             }
             $args = array();
 
             if (isset($_REQUEST['status'])) {
                 global $wpdb;
-                $status = $_REQUEST['status'];
-                $query_status = $_REQUEST['query_status'];
+                $status = esc_attr($_REQUEST['status']);
+                $query_status = esc_attr($_REQUEST['query_status']);
                 $args['status'] = $query_status;
                 $query = '';
                 switch ($status) {
@@ -556,7 +559,8 @@ class LiveForms {
                 $wpdb->query($query);
 
                 // Get counts
-                $get_count_query = "select * from {$wpdb->prefix}liveforms_conreqs where `status`='{$query_status}' and `fid`='{$_REQUEST['form_id']}'";
+                $form_id = (int)$_REQUEST['form_id'];
+                $get_count_query = "select * from {$wpdb->prefix}liveforms_conreqs where `status`='{$query_status}' and `fid`='{$form_id}'";
                 $request_count = $wpdb->query($get_count_query, ARRAY_A);
             }
 
@@ -694,10 +698,10 @@ class LiveForms {
                 . '</div> ';
             if (isset($_REQUEST['form_id'])) {
                 $args = array(
-                    'form_id' => $_REQUEST['form_id'],
+                    'form_id' => (int)$_REQUEST['form_id'],
                 );
                 if (isset($_REQUEST['status']))
-                    $args['status'] = $_REQUEST['status'];
+                    $args['status'] = esc_attr($_REQUEST['status']);
                 $args['template'] = 'showreqs';
                 $html .= $this->action_get_reqlist($args);
             } else {
@@ -749,7 +753,7 @@ class LiveForms {
             $section = $_REQUEST['section'];
             if ($section == 'requests' && isset($_REQUEST['form_id'])) {
                 $args = array(
-                    'form_id' => $_REQUEST['form_id'],
+                    'form_id' => (int)$_REQUEST['form_id'],
                     'template' => 'admin_showreqs'
                 );
 
@@ -757,16 +761,16 @@ class LiveForms {
             }
             if ($section == 'request' && isset($_REQUEST['req_id'])) {
                 $html .= $this->view_get_request_data($args = array(
-                    'fid' => $_REQUEST['form_id'],
-                    'reply_for' => $_REQUEST['req_id'],
+                    'fid' => (int)$_REQUEST['form_id'],
+                    'reply_for' => (int)$_REQUEST['req_id'],
                     'template' => 'admin_reply_req'
                 ));
             }
             if ($section == 'reply') {
                 $this->handle_replies();
                 $html .= $this->view_get_request_data($args = array(
-                    'fid' => $_REQUEST['form_id'],
-                    'reply_for' => $_REQUEST['req_id'],
+                    'fid' => (int)$_REQUEST['form_id'],
+                    'reply_for' => (int)$_REQUEST['req_id'],
                     'template' => 'admin_reply_req'
                 ));
             }
@@ -884,7 +888,7 @@ class LiveForms {
 
         // If a single form was requested
         if (isset($_REQUEST['form_id'])) {
-            $selected_form_id = $_REQUEST['form_id'];
+            $selected_form_id = (int)$_REQUEST['form_id'];
         } else {
             $selected_form_id = 'none';
         }
@@ -995,7 +999,7 @@ class LiveForms {
      */
     public function ajax_action_submit_form() {
         if ($this->is_ajax() && isset($_REQUEST['action']) && $_REQUEST['action'] == 'submit_form') {
-            $form_id = $_REQUEST['form_id'];
+            $form_id = (int)$_REQUEST['form_id'];
 
             // Update the submit count for this form
             $this->record_submission_stat($form_id, get_client_ip());
@@ -1378,7 +1382,7 @@ class LiveForms {
         $resolved_request_count = $wpdb->get_row($resolved_request_query, ARRAY_A);
 
         //Pagination
-        $items_per_page = isset($_REQUEST['ipp']) ? $_REQUEST['ipp'] : 20;
+        $items_per_page = isset($_REQUEST['ipp']) ? (int)$_REQUEST['ipp'] : 20;
         $page_id = isset($_REQUEST['paged']) ? intval($_REQUEST['paged']) - 1 : 0 ;
         $starting_item = intval($page_id) * intval($items_per_page);
         $query .= " limit {$starting_item}, {$items_per_page}";

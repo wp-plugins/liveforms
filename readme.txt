@@ -83,6 +83,11 @@ Check [LiveForms Add-Ons](http://liveforms.org/downloads/add-ons/) for more feat
 
 == Changelog ==
 
+
+= 3.2.0 =
+* Filtered missing user inputs
+* Fixed security issue with SQL injection
+
 = 3.0.1 =
 * Synchronized with old users so that now they can get updates directly from wp.org
 * Added new option to enable/disable bootstrap from front-end
