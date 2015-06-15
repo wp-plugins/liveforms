@@ -4,8 +4,8 @@
   Plugin Name: Live Forms
   Plugin URI: http://liveforms.org/
   Description: Drag and Drop Form Builder Form WordPress
-  Author: WP Eden
-  Version: 3.2.0
+  Author: Shaon
+  Version: 3.2.1
   Author URI: http://liveforms.org/
  */
 
@@ -25,6 +25,7 @@ require_once LF_BASE_DIR . 'libs/field_defs.php';
 require_once LF_BASE_DIR . 'libs/form-fields.class.php';
 require_once LF_BASE_DIR . 'libs/functions.php';
 require_once LF_BASE_DIR . 'libs/phpcaptcha/captcha.php';
+require_once LF_BASE_DIR . 'libs/font-awesome.php';
 require_once LF_BASE_DIR . 'settings.php';
 
 class LiveForms {
@@ -312,7 +313,7 @@ class LiveForms {
         //jQuery UI datetime picker
         wp_enqueue_style('lf_jquery_ui', LF_BASE_URL . "views/css/jquery-ui.css");
         wp_enqueue_style('lf_jquery_ui_timepicker_addon_css', LF_BASE_URL.'views/css/jquery-ui-timepicker-addon.css');
-
+        wp_enqueue_style("font-awesome", "https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css");
         // RateIt!
         wp_enqueue_style('lf_rateit_css', LF_BASE_URL. "views/css/rateit.css");
 

@@ -118,11 +118,30 @@ class Text {
 							</select>
 						</div>
 					</div>
+					<label>Icon</label>
+					<div class="row">
+					    <div class="form-group col-md-6">
+						   <select name="contact[fieldsinfo][<?php echo $fieldindex ?>][icon-pos][op]" class="form-control icontext" id="icontext" data-selection='<?php echo isset($field_infos[$fieldindex]['icon-pos']['op']) ? $field_infos[$fieldindex]['icon-pos']['op'] : ''  ?>'>
+	                           <option value="no icon">No icon</option>
+	                           <option value="before">Before</option>
+	                           <option value="after">After</option>
+						   </select>
+						</div>
+						<div class="form-group col-md-6 hide icon-code-div">
+						    <select name="contact[fieldsinfo][<?php echo $fieldindex ?>][icon-code]" data-selection='<?php echo isset($field_infos[$fieldindex]['icon-code']) ? $field_infos[$fieldindex]['icon-code'] : ''  ?>' class="form-control icon-code" id="icon-code">
+	                           <option value="no icon">Select your Icon</option>
+	                           <?php 
+                                  $fa = new FontAweome();
+                                  echo $fa->html();
+	                           ?>
+						   </select>
+						</div>
+					</div>
 				</fieldset>
 				<?php do_action("form_field_".__CLASS__."_settings",$fieldindex, $fieldid, $field_infos); ?>
 				<?php do_action("form_field_settings",$fieldindex, $fieldid, $field_infos); ?>
 			</div>
-			<div class="field-preview">
+			<div class="field-preview" id="found">
 				<?php 	
 					$finfo = $field_infos[$fieldindex];
 					$finfo['id'] = $fieldindex;
@@ -137,9 +156,33 @@ class Text {
 
 	public function field_preview_html($params = array()) {
 		ob_start();
+		if($params['icon-pos']['op'] != 'no icon') {
 		?>
-		<input type='text' disabled="disabled" name='submitform[]' class='form-control' value='' />
+		<?php if($params['icon-pos']['op'] == 'before'){?>
+			<div class="input-group">
+			<span class="input-group-addon" id=""><i class='<?php echo isset($params['icon-code']) ? $params['icon-code'] : ''; ?>'></i></span>
+			<input type='text' disabled="disabled" name='submitform[]' class='form-control' value='' aria-describedby="" />
+			</div>
+	    <?php } ?>
+		<?php if($params['icon-pos']['op'] == 'after'){?>
+			<div class="input-group">
+			<input type='text' disabled="disabled" name='submitform[]' class='form-control' value='' aria-describedby="" />
+			<span class="input-group-addon" id=""><i class='<?php echo isset($params['icon-code']) ? $params['icon-code'] : ''; ?>'></i></span>
+			</div>
+	    <?php } } 
+            else {
+	    ?>
+	     <input type='text' disabled="disabled" name='submitform[]' class='form-control' value='' aria-describedby="" />
+	    
 		<?php
+		  }
+
+		  if(!isset($params['icon-code'])) {
+		?>
+         <input type='text' disabled="disabled" name='submitform[]' class='form-control' value='' aria-describedby="" />
+		<?php  	
+		  }
+         
 		$field_render_html = ob_get_clean();
 		return $field_render_html;
 	}
@@ -160,11 +203,26 @@ class Text {
 			}
 			$condition_fields = rtrim($condition_fields, '|');
 		}
+
+		if(isset($params['icon-pos']['op']) && isset($params['icon-code']) && $params['icon-pos']['op'] != 'no icon'):
 		?>
+		    <label for='field' style='display: block;clear: both'><?php echo $params['label'] ?></label>
+		    <div id="<?php echo $params['id'] ?>" class='form-group <?php if (isset($params['conditioned'])) echo " conditioned hide "?> input-group' data-cond-fields="<?php echo $condition_fields ?>" data-cond-action="<?php echo $cond_action.':'.$cond_boolean ?>">
+			    	
+				<?php if($params['icon-pos']['op'] == 'before'):?>
+				<span class="input-group-addon" id=""><i class='<?php echo isset($params['icon-code']) ? $params['icon-code'] : ''; ?>'></i></span>
+			    <?php endif; ?>
+				<input type='text' name='submitform[<?php echo isset($params['id'])?$params['id']:'' ?>]' class='form-control' value='' <?php echo required($params)?>  aria-describedby="" />
+				<?php if($params['icon-pos']['op'] == 'after'):?>
+				<span class="input-group-addon" id=""><i class='<?php echo isset($params['icon-code']) ? $params['icon-code'] : ''; ?>'></i></span>
+			    <?php endif; ?>
+			</div>
+	    <?php else:?>
 		<div id="<?php echo $params['id'] ?>" class='form-group <?php if (isset($params['conditioned'])) echo " conditioned hide "?>' data-cond-fields="<?php echo $condition_fields ?>" data-cond-action="<?php echo $cond_action.':'.$cond_boolean ?>" >
 			<label for='field' style='display: block;clear: both'><?php echo $params['label'] ?></label>
 			<input type='text'  name='submitform[<?php echo isset($params['id'])?$params['id']:'' ?>]' class='form-control' value='' <?php echo required($params)?> />
 		</div>
+	    <?php endif; ?>
 		<?php
 		$field_render_html = ob_get_clean();
 		return $field_render_html;
@@ -266,11 +324,30 @@ class Text {
 							</select>
 						</div>
 					</div>
+					<label>Icon:</label>
+					<div class="row">
+					    <div class="form-group col-md-6">
+						   <select name="contact[fieldsinfo][{{ID}}][icon-pos][op]" class="form-control icontext" id="icontext">
+	                           <option value="no icon">No icon</option>
+	                           <option value="before">Before</option>
+	                           <option value="after">After</option>
+						   </select>
+						</div>
+						<div class="form-group col-md-6 hide icon-code-div">
+						    <select name="contact[fieldsinfo][{{ID}}][icon-code]" class="form-control icon-code" id="icon-code">
+	                           <option value="no icon">Select your Icon</option>
+	                           <?php 
+                                  $fa = new FontAweome();
+                                  echo $fa->html();
+	                           ?>
+						   </select>
+						</div>
+					</div>
 				</fieldset>
 				<?php do_action("form_field_".__CLASS__."_settings_template"); ?>
 				<?php do_action("form_field_settings_template"); ?>
 			</div>
-			<div class="field-preview">
+			<div class="field-preview" id="found">
 				<?php echo self::field_preview_html() ?>
 			</div>
 		</li>

@@ -235,7 +235,8 @@ foreach($advanced_fields as $fieldclass) {
 <!-- Teamplates end -->
 <!-- Engine functions start -->
 <script type="text/javascript">
-var ds = 0;
+var ds = 0,
+    icode_pos = '';
 
 function throttle( fn, time ) {
 	var t = 0;
@@ -687,6 +688,43 @@ jQuery(function ($) {
 		$('#submit_button_sample').addClass('btn-'+new_class);
 	});
 
+	$(document).on("change", ".icontext", function() {
+       
+       $op_selection = $(this).val();
+       icode_pos = $op_selection;
+	   if ($op_selection == 'before' || $op_selection == 'after') {
+		  $(this).parent().parent().find('.icon-code-div').removeClass('hide');
+          $cur_icon = $(this).parent().parent().find('.icon-code').val();
+          var chn_prv = '';
+		  if($(this).val() == 'before') {
+
+		  	 chn_prv = '<div class="' + 'input-group' + '"><span class="'+ 'input-group-addon"'  + ' id="' + '"' + '">' + '<i class="' + $cur_icon + '"></i></span>' + '<input type="' + 'text"' + ' disabled="' + 'disabled"' + ' name="' + 'submitform[]"' + ' class="' + 'form-control"' + ' aria-describedby="' + '""' + ' value="' + '"></div>';
+		  }
+
+		  else {
+
+		  	chn_prv = '<div class="' + 'input-group' + '">' + '<input type="' + 'text"' + ' disabled="' + 'disabled"' + ' name="' + 'submitform[]"' + ' class="' + 'form-control"' + ' aria-describedby="' + '""' + ' value="' + '"><span class="'+ 'input-group-addon"'  + ' id="' + '' + '">' + '<i class="' + $cur_icon + '"></i></span></div>';
+		  }
+		  $cur_prv = $(this).parent().parent().parent().parent().parent().find('.field-preview').html(chn_prv);
+		  
+	   } else {
+		  $(this).parent().parent().find('.icon-code-div').addClass('hide');
+		  $(this).parent().parent().find('.icon-code').val('');
+		  $(this).parent().parent().find('.icon-code').find('option[value="no icon"]').attr('selected', 'selected');
+		  $cur_icon = $(this).parent().parent().find('.icon-code').val();
+		  var chn_prv = '<input type="' + 'text"' + ' disabled="' + 'disabled"' + ' name="' + 'submitform[]"' + ' class="' + 'form-control"' + ' aria-describedby="' + '""' + ' value="' + '">';
+		  $cur_prv = $(this).parent().parent().parent().parent().parent().find('.field-preview').html(chn_prv);
+		  
+	} 
+	});
+
+	$(document).on("change", ".icon-code", function() {
+          $cur_icon = $(this).val();
+		  
+		  $cur_prv = $(this).parent().parent().parent().parent().parent().find('.field-preview');
+		  $($cur_prv).find('i').attr('class', $cur_icon);
+	});
+
 });
 
 jQuery(document).ready(function($){
@@ -754,6 +792,24 @@ jQuery(document).ready(function($){
 			}
 		});
 	}, 50));
+
+  $('.icontext').each(function() {
+  	 var selop = $(this).attr('data-selection');
+     if(selop == 'no icon') {
+     	$(this).parent().parent().find('.icon-code-div').addClass('hide');
+
+     }else {
+     	$(this).find('option[value="' + selop + '"]').attr('selected', 'selected');
+     	$(this).parent().parent().find('.icon-code-div').removeClass('hide');
+     	
+     }
+  });
+
+  $('.icon-code').each(function() {
+  	 var selop = $(this).attr('data-selection');
+     	$(this).find('option[value="' + selop + '"]').attr('selected', 'selected');
+     
+  });
 
 });
 

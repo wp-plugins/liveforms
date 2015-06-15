@@ -1,5 +1,5 @@
 === Live Forms - Visual Form Builder ===
-Contributors: codename065, shahriar0822
+Contributors: codename065, shahriar0822, Sunny89
 Donate link: http://liveforms.org/ 
 Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form, contact forms
 Requires at least: 3.5
@@ -83,6 +83,9 @@ Check [LiveForms Add-Ons](http://liveforms.org/downloads/add-ons/) for more feat
 
 == Changelog ==
 
+= 3.2.1 =
+* Added New Icon option in the Text Field.
+* Font-awesome icons available to select with Text Field.
 
 = 3.2.0 =
 * Filtered missing user inputs

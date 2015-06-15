@@ -217,3 +217,9 @@ a:active{
 .w3eden .ui-draggable-dragging{
     width: 80%;
 }
+
+.text-icon {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+}
