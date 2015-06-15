@@ -3,7 +3,7 @@ Contributors: codename065, shahriar0822, Sunny89
 Donate link: http://liveforms.org/ 
 Tags: contact form builder, contact form, form builder, support form, form builder plugin, drag and drop form builder, visual form builder, bootstrap form, contact forms
 Requires at least: 3.5
-Tested up to: 4.1
+Tested up to: 4.2
 License: GPLv2 or later
  
   
